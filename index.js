@@ -1,6 +1,7 @@
 const data = JSON.parse(localStorage.getItem("data"));
 
-//log experience variables
+//log variables
+
 let productOptionCode = data.bookableItems[0].productOptionCode;
 if (productOptionCode === undefined) {
   productOptionCode = "No Product Option Code";
@@ -50,7 +51,9 @@ let availableDates = [];
 let filteredSeasonDates = [];
 let filteredAvailableDates = [];
 let availableDays = [];
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//log variables end
+
 const firstDate = new Date(); // gets the current date and time
 const lastDate = new Date();
 lastDate.setFullYear(firstDate.getFullYear() + 1); // Set the end date to one year from the current date
@@ -126,6 +129,24 @@ function filterDatesByDayOfWeek(filteredSeasonDates, daysOfWeek) {
   console.log("daysfil", filteredAvailableDates);
   return filteredAvailableDates;
 }
+// Function to get all unavailable dates from all bookable items
+function getAllUnavailableDates(data) {
+  let allUnavailableDates = [];
+
+  data.bookableItems.forEach((item) => {
+    item.seasons.forEach((season) => {
+      season.pricingRecords.forEach((pricingRecord) => {
+        allUnavailableDates = allUnavailableDates.concat(
+          pricingRecord.unavailableDates.map((dateEntry) => dateEntry.date)
+        );
+      });
+    });
+  });
+
+  // Remove duplicate dates
+  return [...new Set(allUnavailableDates)];
+}
+
 //+++++++++++++++++++
 if (productOptionCode) {
   console.log("Has PC");
@@ -178,17 +199,13 @@ if (productOptionCode) {
           });
           if (hasUnavailableDates) {
             console.log("Has UnDates");
-            // Filter UnDates that are unavailable for all start times
-            unavailableDates = availableDates.filter((date) => {
-              return data.bookableItems[0].seasons[0].pricingRecords[0].unavailableDates.every(
-                (entry) => {
-                  return entry.unavailableDates.some(
-                    (dateEntry) => dateEntry.date === date
-                  );
-                }
-              );
+            const allUnavailableDates = getAllUnavailableDates(data);
+
+            const unavailableDates = availableDates.filter((date) => {
+              return allUnavailableDates.includes(date);
             });
             console.log("unDates", unavailableDates);
+
             // Filter UnDates that are unavailable for all start times
             const unavailableDateSet = new Set(unavailableDates);
             filteredAvailableDates = filteredSeasonDates.filter(
