@@ -522,7 +522,7 @@ if (productOptionCode) {
           console.log("No UnDates");
         } //Has No Unavailable Dates
       } else {
-        console.log("No TE");
+        console.log("No Timed Entries");
         let hasUnavailableDates = pricingRecords.some((entry) => {
           return (
             Array.isArray(entry.unavailableDates) &&
@@ -545,7 +545,9 @@ if (productOptionCode) {
           );
           console.log("Fil Dates", filteredAvailableDates);
         } else {
-          console.log("No UnDates");
+          console.log("No Unavailable Dates");
+          filteredAvailableDates = filteredSeasonDates;
+          console.log(filteredAvailableDates);
         }
       } //Has No Timed Entries
     } else {
