@@ -1,62 +1,27 @@
 const data = JSON.parse(localStorage.getItem("data"));
 
-//log variables
+//set variables
 
-let productOptionCode = data.bookableItems[0].productOptionCode;
-if (productOptionCode === undefined) {
-  productOptionCode = "No Product Option Code";
-}
-console.log(productOptionCode);
-
-const seasons = data.bookableItems[0].seasons;
-console.log("Number of seasons: " + seasons.length);
-console.log(seasons);
-
-for (const season of seasons) {
-  const startDate = season.startDate || "No Start Date";
-  const endDate = season.endDate || "No End Date";
-  console.log(`Season Start Date: ${startDate}, End Date: ${endDate}`);
-}
-
+const getProductOptionCode = (data) => {
+  return data.bookableItems[0].productOptionCode || "No Product Option Code";
+};
+const productOptionCode = getProductOptionCode(data);
+let seasons = data.bookableItems[0].seasons;
 const startDate = seasons[0].startDate;
 const endDate = seasons[0].endDate;
-
 const daysOfWeek = seasons[0].pricingRecords[0].daysOfWeek;
-console.log(daysOfWeek);
-
 const pricingRecords = seasons[0].pricingRecords;
-console.log(pricingRecords);
 let timedEntries = seasons[0].pricingRecords[0].timedEntries;
-
-if (timedEntries === undefined) {
-  timedEntries = "No Timed Entries";
-} else {
-  const numberOfTimedEntries = timedEntries.length;
-  console.log(`Number of Timed Entries: ${numberOfTimedEntries}`);
-}
-console.log(timedEntries);
-
-let unavailableDates = seasons[0].pricingRecords[0].unavailableDates;
-
-if (unavailableDates === undefined) {
-  unavailableDates = "No Unavailable Dates";
-} else {
-  const numberOfunavailableDates = unavailableDates.length;
-  console.log(`Number of Unavailable Dates: ${numberOfunavailableDates}`);
-}
-console.log(unavailableDates);
+const numberOfTimedEntries = timedEntries.length;
+const firstDate = new Date(); // gets the current date and time
+const lastDate = new Date();
+lastDate.setFullYear(firstDate.getFullYear() + 1); // Set the end date to one year from the current date
 
 //set empty variables
 let availableDates = [];
 let filteredSeasonDates = [];
 let filteredAvailableDates = [];
 let availableDays = [];
-
-//log variables end
-
-const firstDate = new Date(); // gets the current date and time
-const lastDate = new Date();
-lastDate.setFullYear(firstDate.getFullYear() + 1); // Set the end date to one year from the current date
 
 while (firstDate < lastDate) {
   const year = firstDate.getFullYear(); // Extract the last two digits of the year
@@ -69,54 +34,155 @@ while (firstDate < lastDate) {
   firstDate.setDate(firstDate.getDate() + 1); // Move to the next day
 }
 
-console.log("Next 366 Days", availableDates);
+console.log("Available Dates: Next 366 Days", availableDates);
 
-// Extract s&e dates of each season and log dates within each season
-data.bookableItems[0].seasons.forEach((season) => {
-  const startDate = new Date(season.startDate);
+// ALL FUNCTIONS //
 
-  // Check if season.endDate is defined, if not, assign it the last date from availDates
-  if (!season.endDate) {
-    season.endDate = availableDates[availableDates.length - 1];
+// FUNCTION - to build unavailable date array when no timed entires are available
+function processUnavailableDates(seasons) {
+  let unavailableDates =
+    data.bookableItems[0].seasons[0]?.pricingRecords[0]?.timedEntries[0]
+      ?.unavailableDates;
+
+  if (unavailableDates === undefined) {
+    console.log("No Unavailable Dates");
+    return "No Unavailable Dates";
+  } else {
+    const numberOfUnavailableDates = unavailableDates.length;
+    console.log(`Number of Unavailable Dates: ${numberOfUnavailableDates}`);
+    return unavailableDates;
   }
-
-  console.log(`Season: ${season.startDate} to ${season.endDate}`);
-
-  const seasonDates = [];
-  const currentDate = new Date(startDate);
-
-  while (currentDate <= new Date(season.endDate)) {
-    seasonDates.push(currentDate.toISOString().split("T")[0]);
-    currentDate.setDate(currentDate.getDate() + 1);
+}
+// FUNCTION - to build unavailable date array when timed entires ARE available
+function processUnavailableDates2(seasons) {
+  // Ensure that seasons, pricingRecords, and timedEntries exist
+  if (
+    !data.bookableItems[0].seasons[0]?.pricingRecords[0]?.timedEntries[0]
+      ?.unavailableDates
+  ) {
+    console.log("Required data is missing");
+    return "Required data is missing";
   }
+  // Extract all available dates (assuming you have this data)
+  let availableDates = [filteredAvailableDates]; // Populate this with your available dates
+  // Filter unavailable dates that are unavailable for all start times
+  let unavailableDates = availableDates.filter((date) => {
+    return seasons[0].pricingRecords[0].timedEntries.every((entry) => {
+      return entry.unavailableDates.some(
+        (dateEntry) => dateEntry.date === date
+      );
+    });
+  });
 
-  console.log("All dates within seasons", seasonDates);
-});
+  if (unavailableDates.length === 0) {
+    console.log("No Unavailable Dates");
+    return "No Unavailable Dates";
+  } else {
+    console.log(`Number of Unavailable Dates: ${unavailableDates.length}`);
+    return unavailableDates;
+  }
+}
+// FUNCTION - Builds Season Start & End Date
+function buildSeasonRange(seasons) {
+  // Iterate through each season and log its start and end dates
+  for (const season of seasons) {
+    const startDate = season.startDate || "No Start Date";
+    const endDate = season.endDate || "No End Date";
+    console.log(`Season Start Date: ${startDate}, End Date: ${endDate}`);
+  }
+}
+// Example usage:
+// logSeasonDates(yourSeasonsArray);
 
-// Iterate through the available dates and check if each date falls within any season
-filteredSeasonDates = availableDates.filter((date) => {
-  const currentDate = new Date(date);
-  // Check if the date falls within any season
-  return data.bookableItems[0].seasons.some(
-    (season) =>
-      currentDate >= new Date(season.startDate) &&
-      currentDate <= new Date(season.endDate)
+// FUNCTION - Build all Days Within 1 Season
+function buildDayInSeason(data, availableDates) {
+  // Extract start & end dates from each season and log dates within season
+  data.bookableItems[0].seasons.forEach((season) => {
+    const startDate = new Date(season.startDate);
+    // Set the end date to the last available date if it's not provided
+    if (!season.endDate) {
+      season.endDate = availableDates[availableDates.length - 1];
+    }
+    const seasonDates = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= new Date(season.endDate)) {
+      seasonDates.push(currentDate.toISOString().split("T")[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    console.log("All dates within the seasons", seasonDates);
+  });
+}
+// Example usage:
+// logSeasonDates(yourDataObject, yourAvailableDatesArray);
+
+// FUNCTION - Filter Season Dates With Available Dates
+function filterSeasonDates(availableDates, data) {
+  // Iterate through the available dates and check if each date falls within any season
+  let filteredSeasonDates = availableDates.filter((date) => {
+    const currentDate = new Date(date);
+    // Check if the date falls within any season
+    return data.bookableItems[0].seasons.some(
+      (season) =>
+        currentDate >= new Date(season.startDate) &&
+        currentDate <= new Date(season.endDate)
+    );
+  });
+
+  console.log("Dates within season and next 366 days", filteredSeasonDates);
+  return filteredSeasonDates;
+}
+// Example usage:
+// filteredSeasonDates = filterSeasonDates(availableDates, data);
+
+// FUNCTION - Common Unavailable Dates for Time Entries
+function getCommonUnavailableDates(data) {
+  const timedEntries =
+    data.bookableItems[0].seasons[0].pricingRecords[0].timedEntries;
+  // Create a map of unavailable dates for each start time
+  const unavailableDatesMap = {};
+  timedEntries.forEach((entry) => {
+    unavailableDatesMap[entry.startTime] = entry.unavailableDates.map(
+      (date) => date.date
+    );
+  });
+  // Find common dates across all start times
+  const allStartTimes = Object.keys(unavailableDatesMap);
+  const commonUnavailableDates = allStartTimes.reduce(
+    (commonDates, startTime) => {
+      if (commonDates === null) return new Set(unavailableDatesMap[startTime]);
+      return new Set(
+        [...commonDates].filter((date) =>
+          unavailableDatesMap[startTime].includes(date)
+        )
+      );
+    },
+    null
   );
-});
+  console.log("Common Unvailable Dates", commonUnavailableDates);
+  return [...commonUnavailableDates];
+}
+// Example usage:
+// const let commonUnavailableDates = getCommonUnavailableDates(data);
 
-console.log("Dates within season and next 366 days", filteredSeasonDates);
-
-//functions
-//filter by unavail func
-function filterAvDatesByUnDates(filteredSeasonDates, unavailableDates) {
-  const unavailableDateSet = new Set(unavailableDates);
+//FUNCTION - Filter Season Dates with Common Unavailable Dates
+function filterSeasonWithCommonUnavailableDates(
+  filteredSeasonDates,
+  commonUnavailableDates
+) {
+  const unavailableDateSet = new Set(commonUnavailableDates);
   const filteredAvailableDates = filteredSeasonDates.filter(
     (date) => !unavailableDateSet.has(date)
   );
-  console.log("FilDates", filteredAvailableDates);
+  console.log(
+    "Filtered Season dates with no common unavailable dates ",
+    filteredAvailableDates
+  );
   return filteredAvailableDates;
 }
-// filter days of the week
+// Example usage:
+// filteredAvailableDates = filterSeasonWithCommonUnavailableDates(filteredSeasonDates,commonUnavailableDates);
+
+// FUNCTION - Filter by days of the week
 function filterDatesByDayOfWeek(filteredSeasonDates, daysOfWeek) {
   const filteredAvailableDates = filteredSeasonDates.filter((dateString) => {
     const date = new Date(dateString);
@@ -125,10 +191,27 @@ function filterDatesByDayOfWeek(filteredSeasonDates, daysOfWeek) {
       .toUpperCase();
     return daysOfWeek.includes(dayOfWeek);
   });
-
-  console.log("daysfil", filteredAvailableDates);
+  console.log("Filtered dates by days of the week:", filteredAvailableDates);
   return filteredAvailableDates;
 }
+// Example usage:
+//let filteredAvailableDates = filterDatesByDayOfWeek(filteredSeasonDates, daysOfWeek);
+
+// FUNCTION - Get the first available date for calendar
+function getFirstAvailableDate() {
+  // Assuming filteredAvailableDates is an array of "yyyy-mm-dd" strings
+  // Check if the array is not empty
+  if (filteredAvailableDates && filteredAvailableDates.length > 0) {
+    // Return a new Date object created from the first element in the array
+    return new Date(filteredAvailableDates[0]);
+  } else {
+    // Return today's date or any other default value if no dates are available
+    return new Date();
+  }
+}
+// Example usage:
+// getFirstAvailableDate()
+
 // Function to get all unavailable dates from all bookable items
 function getAllUnavailableDates(data) {
   let allUnavailableDates = [];
@@ -147,154 +230,231 @@ function getAllUnavailableDates(data) {
   return [...new Set(allUnavailableDates)];
 }
 
-//+++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 if (productOptionCode) {
-  console.log("Has PC");
+  console.log("Has Product Option Code. 1/5");
   if (Array.isArray(productOptionCode) && productOptionCode.length > 1) {
-    console.log("PC > 1");
+    console.log("More than one Product Option Code. 2/5");
+    console.log("Number of Product Option Codes:", productOptionCode.length);
+    console.log("Array of Product Option Codes:", productOptionCode);
   } else {
-    console.log("1 PC");
+    console.log("Has 1 Product Option Code. 2/5");
+    console.log(`Product Option Code: ${productOptionCode}`);
 
-    if (startDate && endDate) {
-      console.log("S&E Date");
-      if (Array.isArray(daysOfWeek) && daysOfWeek.length === 7) {
-        console.log("Runs Every Day");
-        if (Array.isArray(timedEntries) && timedEntries.length > 0) {
-          console.log("Has TE");
-          let hasUnavailableDates = timedEntries.some((entry) => {
-            return (
-              Array.isArray(entry.unavailableDates) &&
-              entry.unavailableDates.length > 0
-            );
-          });
-          if (hasUnavailableDates) {
-            console.log("Has UnDates");
-            // Filter UnDates that are unavailable for all start times
-            unavailableDates = availableDates.filter((date) => {
-              return data.bookableItems[0].seasons[0].pricingRecords[0].timedEntries.every(
-                (entry) => {
-                  return entry.unavailableDates.some(
-                    (dateEntry) => dateEntry.date === date
-                  );
-                }
+    if (seasons.length === 1) {
+      console.log("Has 1 Season. 2/5");
+      // FUNCTION - Builds Season Start & End Date
+      buildSeasonRange(seasons);
+      // FUNCTION - Build all Days Within 1 Season
+      buildDayInSeason(data, availableDates);
+      // FUNCTION - Filter Season Dates With Available Dates
+      filteredSeasonDates = filterSeasonDates(availableDates, data);
+      if (startDate && endDate) {
+        console.log("Has Start and End Date. 3/5");
+        console.log(`Season Start Date: ${startDate}, End Date: ${endDate}`);
+
+        if (Array.isArray(daysOfWeek) && daysOfWeek.length === 7) {
+          console.log("Runs Every Day. 4/5");
+          console.log(daysOfWeek);
+
+          if (Array.isArray(timedEntries) && timedEntries.length > 0) {
+            console.log("Has Timed Entries");
+            let hasUnavailableDates = timedEntries.some((entry) => {
+              return (
+                Array.isArray(entry.unavailableDates) &&
+                entry.unavailableDates.length > 0
               );
             });
-            console.log("unDates", unavailableDates);
-            // Filter UnDates that are unavailable for all start times
-            const unavailableDateSet = new Set(unavailableDates);
-            filteredAvailableDates = filteredSeasonDates.filter(
-              (date) => !unavailableDateSet.has(date)
-            );
-            console.log("Fil Dates", filteredAvailableDates);
-          } else {
-            console.log("No UnDates");
-          } //Has No Unavailable Dates
-        } else {
-          console.log("No TE2");
-          let hasUnavailableDates = pricingRecords.some((entry) => {
-            return (
-              Array.isArray(entry.unavailableDates) &&
-              entry.unavailableDates.length > 0
-            );
-          });
-          if (hasUnavailableDates) {
-            console.log("Has UnDates");
-            const allUnavailableDates = getAllUnavailableDates(data);
 
-            const unavailableDates = availableDates.filter((date) => {
-              return allUnavailableDates.includes(date);
+            if (hasUnavailableDates) {
+              console.log("Has Unavailable Dates");
+              // FUNCTION - Common Unavailable Dates for Time Entries
+              let commonUnavailableDates = getCommonUnavailableDates(data);
+              const numberOfCommonDates = commonUnavailableDates.length;
+              console.log(
+                `Number of Common Unavailable Dates: ${numberOfCommonDates}`
+              );
+              filterSeasonDates = filterSeasonDates(availableDates, data);
+              console.log(filteredSeasonDates);
+              filteredAvailableDates = filterSeasonWithCommonUnavailableDates(
+                filteredSeasonDates,
+                commonUnavailableDates
+              );
+            } else {
+              console.log("No UnDates");
+            } //Has No Unavailable Dates
+          } else {
+            console.log("No TE");
+            let hasUnavailableDates = pricingRecords.some((entry) => {
+              return (
+                Array.isArray(entry.unavailableDates) &&
+                entry.unavailableDates.length > 0
+              );
             });
-            console.log("unDates", unavailableDates);
+            if (hasUnavailableDates) {
+              console.log("Has UnDates");
+              const allUnavailableDates = getAllUnavailableDates(data);
 
-            // Filter UnDates that are unavailable for all start times
-            const unavailableDateSet = new Set(unavailableDates);
-            filteredAvailableDates = filteredSeasonDates.filter(
-              (date) => !unavailableDateSet.has(date)
-            );
-            console.log("Fil Dates", filteredAvailableDates);
-          } else {
-            console.log("No UnDates");
+              const unavailableDates = availableDates.filter((date) => {
+                return allUnavailableDates.includes(date);
+              });
+              console.log("unDates", unavailableDates);
+
+              // Filter UnDates that are unavailable for all start times
+              const unavailableDateSet = new Set(unavailableDates);
+              filteredAvailableDates = filteredSeasonDates.filter(
+                (date) => !unavailableDateSet.has(date)
+              );
+              console.log("Fil Dates", filteredAvailableDates);
+            } else {
+              console.log("No UnDates");
+            }
+          } //Has No Timed Entries
+        } else {
+          console.log("Runs on: " + daysOfWeek.join(", ") + "4/5");
+
+          if (Array.isArray(timedEntries) && timedEntries.length > 0) {
+            console.log("Has Timed Entries. 5/5");
+            console.log(`Number of Timed Entries: ${numberOfTimedEntries}`);
+            console.log(timedEntries);
+
+            let hasUnavailableDates = timedEntries.some((entry) => {
+              return (
+                Array.isArray(entry.unavailableDates) &&
+                entry.unavailableDates.length > 0
+              );
+            });
+
+            if (hasUnavailableDates) {
+              console.log("Has Unavaiable Dates. 6/6");
+
+              // FUNCTION - Common Unavailable Dates for Time Entries
+              let commonUnavailableDates = getCommonUnavailableDates(data);
+              console.log(
+                "Number of Common Unavailable Dates:",
+                filteredSeasonDates
+              );
+              const numberOfCommonDates = commonUnavailableDates.length;
+              console.log(
+                `Number of Common Unavailable Dates: ${numberOfCommonDates}`
+              );
+              let filteredSeasonDates = filterSeasonDates(availableDates, data);
+
+              console.log(
+                "Common Unavailable Dates for all times:",
+                commonUnavailableDates
+              );
+
+              // FUNCTION - Common Unavailable Dates for Time Entries
+              filteredAvailableDates = filterSeasonWithCommonUnavailableDates(
+                filteredSeasonDates,
+                commonUnavailableDates
+              );
+              // FUNCTION - Filter by days of the week
+              filteredAvailableDates = filterDatesByDayOfWeek(
+                filteredAvailableDates,
+                daysOfWeek
+              );
+            } else {
+              console.log("Has No Unavalable Dates. 6/6");
+            } //Has No Unavailable Dates
           }
-        } //Has No Timed Entries
-      } else {
-        console.log("Runs on: " + daysOfWeek.join(", "));
-      } //else Runs on the following days
-    } else if (startDate) {
-      console.log("Start Date");
-      if (Array.isArray(daysOfWeek) && daysOfWeek.length === 7) {
-        console.log("Runs Every Day");
-        if (Array.isArray(timedEntries) && timedEntries.length > 0) {
-          console.log("Has TE");
-          let hasUnavailableDates = timedEntries.some((entry) => {
-            return (
-              Array.isArray(entry.unavailableDates) &&
-              entry.unavailableDates.length > 0
-            );
-          });
-          if (hasUnavailableDates) {
-            console.log("Has UnDates");
-            //filterAvDatesByUnDates func
-            unavailableDates = availableDates.filter((date) => {
-              return timedEntries.every((entry) => {
-                return entry.unavailableDates.some(
-                  (dateEntry) => dateEntry.date === date
+        } //else Runs on the following days
+      } else if (startDate) {
+        console.log("Has Start Date Only. 3/5");
+
+        if (Array.isArray(daysOfWeek) && daysOfWeek.length === 7) {
+          console.log("Runs Every Day. 4/5");
+
+          if (Array.isArray(timedEntries) && timedEntries.length > 0) {
+            console.log("Has Timed Entries. 5/5");
+            console.log(`Number of Timed Entries: ${numberOfTimedEntries}`);
+            console.log(timedEntries);
+
+            let hasUnavailableDates = timedEntries.some((entry) => {
+              return (
+                Array.isArray(entry.unavailableDates) &&
+                entry.unavailableDates.length > 0
+              );
+            });
+
+            if (hasUnavailableDates) {
+              console.log("Has Unavaiable Dates. 6/6");
+              // FUNCTION - Common Unavailable Dates for Time Entries
+              const commonUnavailableDates = getCommonUnavailableDates(data);
+              const filteredSeasonDates = filterSeasonDates(
+                availableDates,
+                data
+              );
+              const numberOfCommonDates = commonUnavailableDates.length;
+              console.log(
+                `Number of Common Unavailable Dates: ${numberOfCommonDates}`
+              );
+              console.log(
+                "Common Unavailable Dates for all times:",
+                commonUnavailableDates
+              );
+
+              // FUNCTION - Common Unavailable Dates for Time Entries
+              filteredAvailableDates = filterSeasonWithCommonUnavailableDates(
+                filteredSeasonDates,
+                commonUnavailableDates
+              );
+            } else {
+              console.log("Has No Unavalable Dates. 6/6");
+            } //Has No Unavailable Dates
+          } else {
+            console.log("No TE");
+            let hasUnavailableDates = pricingRecords.some((entry) => {
+              return (
+                Array.isArray(entry.unavailableDates) &&
+                entry.unavailableDates.length > 0
+              );
+            });
+
+            if (hasUnavailableDates) {
+              console.log("Has UnDates");
+
+              // Filter UnDates that are unavailable for all start times
+              unavailableDates = availableDates.filter((date) => {
+                return data.bookableItems[0].seasons[0].pricingRecords.every(
+                  (entry) => {
+                    return entry.unavailableDates.some(
+                      (dateEntry) => dateEntry.date === date
+                    );
+                  }
                 );
               });
-            });
-            console.log("unDates", unavailableDates);
-            //filterAvDatesByUnDates func
-            filteredAvailableDates = filterAvDatesByUnDates(
-              filteredSeasonDates,
-              unavailableDates
-            );
-          } else {
-            console.log("No Unates");
-          } //Has No Unavailable Dates
-        } else {
-          console.log("No TE");
-          let hasUnavailableDates = pricingRecords.some((entry) => {
-            return (
-              Array.isArray(entry.unavailableDates) &&
-              entry.unavailableDates.length > 0
-            );
-          });
-
-          if (hasUnavailableDates) {
-            console.log("Has UnDates");
-
-            // Filter UnDates that are unavailable for all start times
-            unavailableDates = availableDates.filter((date) => {
-              return data.bookableItems[0].seasons[0].pricingRecords.every(
-                (entry) => {
-                  return entry.unavailableDates.some(
-                    (dateEntry) => dateEntry.date === date
-                  );
-                }
+              console.log("unDates", unavailableDates);
+              // filterAvDatesByUnDates func
+              filteredAvailableDates = filterAvDatesByUnDates(
+                filteredSeasonDates,
+                unavailableDates
               );
-            });
-            console.log("unDates", unavailableDates);
-            // filterAvDatesByUnDates func
-            filteredAvailableDates = filterAvDatesByUnDates(
-              filteredSeasonDates,
-              unavailableDates
-            );
-          } else {
-            console.log("No UnDates");
-          } //Has No UnDates
-        } //Has No Timed Entries
+            } else {
+              console.log("No UnDates");
+            } //Has No UnDates
+          } //Has No Timed Entries
+        } else {
+          console.log("Runs on: " + daysOfWeek.join(", "));
+          filteredAvailableDates = filterDatesByDayOfWeek(
+            filteredSeasonDates,
+            daysOfWeek
+          );
+        } //else Runs on the following days
       } else {
-        console.log("Runs on: " + daysOfWeek.join(", "));
-        filteredAvailableDates = filterDatesByDayOfWeek(
-          filteredSeasonDates,
-          daysOfWeek
-        );
-      } //else Runs on the following days
-    } else {
-      console.log("No Start Date");
-    } //else has no start date
+        console.log("Has No Start Date. 3/5");
+      } //else has no start date
+    } // 1 season
+    else {
+      console.log("Has more than one season. ");
+      console.log("Number of seasons: " + seasons.length);
+      console.log(seasons);
+    }
   } // 1 PC
 } else {
-  console.log("No PC");
+  console.log("Has No Product Option Code. 1/5");
+
   if (startDate && endDate) {
     console.log("Has S&E Date");
     if (Array.isArray(daysOfWeek) && daysOfWeek.length === 7) {
@@ -369,7 +529,10 @@ if (productOptionCode) {
   } //no start date
 } //if product option code
 //++++++++++++++++++++++
+
 $("#datepicker").datepicker({
+  defaultDate: getFirstAvailableDate(),
+
   minDate: new Date(),
   dateFormat: "yy-mm-dd",
   beforeShow: function (input, inst) {
@@ -393,5 +556,27 @@ $("#datepicker").datepicker({
     let isAvailable = filteredAvailableDates.includes(formattedDate);
 
     return [isAvailable, isAvailable ? "" : "unavailable-date", ""];
+  },
+  onChangeMonthYear: function (year, month, inst) {
+    setTimeout(function () {
+      var nextMonth = month + 1;
+      var nextYear = year;
+      if (nextMonth > 12) {
+        nextMonth = 1;
+        nextYear += 1;
+      }
+
+      var hasAvailableDays = filteredAvailableDates.some(function (date) {
+        return date.startsWith(
+          nextYear + "-" + nextMonth.toString().padStart(2, "0")
+        );
+      });
+
+      if (!hasAvailableDays) {
+        $(".ui-datepicker-next").addClass("ui-state-disabled");
+      } else {
+        $(".ui-datepicker-next").removeClass("ui-state-disabled");
+      }
+    }, 1);
   },
 });
