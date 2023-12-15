@@ -1,3 +1,9 @@
+const offerSubType = localStorage.getItem("offerSubType");
+const offerType = localStorage.getItem("offerType");
+
+if (offerSubType === "Travel - Direct Contract") {
+}
+
 const ageBandOrder = ["adult", "senior", "youth", "child", "infant"];
 paxMixObj.sort(
   (a, b) => ageBandOrder.indexOf(a.ageBand) - ageBandOrder.indexOf(b.ageBand)
@@ -264,6 +270,8 @@ $(document).ready(function () {
       xeroItemId: itemId,
       xeroSupplierId: supplierId,
       airtableId: airtableId,
+      offerType: offerType,
+      offerSubType: offerSubType,
       stripe_customer_id: stripeCustomerId,
       booking_hold_id: booking_ref.bookingRef,
       bookingQuestionAnswers: bQJoint,

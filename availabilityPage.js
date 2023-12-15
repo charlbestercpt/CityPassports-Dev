@@ -1647,8 +1647,18 @@ if (bookableItems) {
 } //if no bookable items
 //++++++++++++++++++++++
 
+// Set the currentDate in localStorage when the page loads
+var currentDate = getFirstAvailableDate();
+var formattedCurrentDate =
+  currentDate.getFullYear() +
+  "-" +
+  (currentDate.getMonth() + 1).toString().padStart(2, "0") +
+  "-" +
+  currentDate.getDate().toString().padStart(2, "0");
+localStorage.setItem("currentDate", formattedCurrentDate);
+
 $("#datepicker").datepicker({
-  defaultDate: getFirstAvailableDate(),
+  defaultDate: currentDate,
 
   minDate: new Date(),
   dateFormat: "yy-mm-dd",
