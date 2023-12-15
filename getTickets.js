@@ -1,5 +1,6 @@
 localStorage.setItem("offerType", offerType);
 localStorage.setItem("offerSubType", offerSubType);
+console.log("test");
 
 if (offerSubType === "Travel - Direct Contract") {
   // Code to execute if the condition is true
