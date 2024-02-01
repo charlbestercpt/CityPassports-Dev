@@ -1,7 +1,7 @@
 localStorage.setItem("offerType", offerType);
 localStorage.setItem("offerSubType", offerSubType);
 
-if (offerType === "Travel Experience") {
+if (offerType === "Travel Experiences") {
   // Code to execute if the condition is true
   console.log("The offer type is Viator Wholesale.");
 
