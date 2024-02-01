@@ -102,7 +102,7 @@ const getTicketsButtonViator = document.getElementById(
 // Add a click event listener to that element
 getTicketsButtonViator.addEventListener("click", function () {
   // Here you can include your if-else logic
-  if (offerSubType === "Travel - Viator Wholesale") {
+  if (offerType === "Travel Experiences") {
     const key = "experienceImage";
     localStorage.setItem(key, experience_image);
 
