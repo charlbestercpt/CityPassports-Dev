@@ -100,291 +100,246 @@ const getTicketsButtonViator = document.getElementById(
 );
 
 // Add a click event listener to that element
-getTicketsButtonViator.addEventListener("click", function () {
-  // Here you can include your if-else logic
-  if (offerType === "Travel Experiences") {
-    const key = "experienceImage";
-    localStorage.setItem(key, experience_image);
 
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
+getTicketsButtonViator.addEventListener(
+  "click",
+  function (event) {
+    event.preventDefault(); // This will now work as expected
+    // Your additional logic here
 
-    // Viator Product Call
+    // Here you can include your if-else logic
+    if (offerType === "Travel Experiences") {
+      const key = "experienceImage";
+      localStorage.setItem(key, experience_image);
 
-    fetch(
-      `https://hook.us1.make.com/g6t9pxvv5h7hf7a9ftb7qcl975caz54x?product_code=${productCode}`,
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        localStorage.setItem("booking_questions", result);
-        console.log("Updated local storage");
-      })
-      .catch((error) => console.log("error", error));
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
 
-    fetch(
-      `https://hook.us1.make.com/6to1i7agoi3k956b5pde9flbgzbrms3b/?product_code=${productCode}`,
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        localStorage.setItem("data", result);
+      // Viator Product Call
 
-        // Parse the result to a JSON object
-        var resultObj = JSON.parse(result);
+      fetch(
+        `https://hook.us1.make.com/g6t9pxvv5h7hf7a9ftb7qcl975caz54x?product_code=${productCode}`,
+        requestOptions
+      )
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          localStorage.setItem("booking_questions", result);
+          console.log("Updated local storage");
+        })
+        .catch((error) => console.log("error", error));
 
-        // Check if the code is NOT_FOUND
-        if (resultObj.code === "NOT_FOUND") {
-          // Set the display of the element with id 'notActive' to flex
-          document.getElementById("notActive").style.display = "flex";
+      fetch(
+        `https://hook.us1.make.com/6to1i7agoi3k956b5pde9flbgzbrms3b/?product_code=${productCode}`,
+        requestOptions
+      )
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          localStorage.setItem("data", result);
 
-          // Stop further execution
-          return;
-        }
+          // Parse the result to a JSON object
+          var resultObj = JSON.parse(result);
 
-        const storedData = localStorage.getItem("data");
-        let data = JSON.parse(storedData);
+          // Check if the code is NOT_FOUND
+          if (resultObj.code === "NOT_FOUND") {
+            // Set the display of the element with id 'notActive' to flex
+            document.getElementById("notActive").style.display = "flex";
 
-        const storedDiscountValue = localStorage.getItem("discountValue");
-        const discountValue = JSON.parse(storedDiscountValue);
+            // Stop further execution
+            return;
+          }
 
-        const ageBands = [
-          "ADULT",
-          "SENIOR",
-          "CHILD",
-          "YOUTH",
-          "INFANT",
-          "TRAVELER",
-        ];
+          const storedData = localStorage.getItem("data");
+          let data = JSON.parse(storedData);
 
-        const isAdultDiscountType = localStorage.getItem("ADULT_Disc_Type");
+          const storedDiscountValue = localStorage.getItem("discountValue");
+          const discountValue = JSON.parse(storedDiscountValue);
 
-        if (isAdultDiscountType === "true" && discountValue) {
-          ageBands.forEach((ageBand) => {
-            const discountKey = `${ageBand.toLowerCase()}DiscValue`;
-            const discountPercentage = parseFloat(discountValue[discountKey]);
+          const ageBands = [
+            "ADULT",
+            "SENIOR",
+            "CHILD",
+            "YOUTH",
+            "INFANT",
+            "TRAVELER",
+          ];
 
-            if (discountPercentage) {
-              data.bookableItems.forEach((product) => {
-                product.seasons.forEach((season) => {
-                  season.pricingRecords.forEach((record) => {
-                    record.pricingDetails.forEach((detail) => {
-                      if (detail.ageBand === ageBand) {
-                        detail.price.original.recommendedRetailPrice -=
-                          (detail.price.original.recommendedRetailPrice *
-                            discountPercentage) /
-                          100;
+          const isAdultDiscountType = localStorage.getItem("ADULT_Disc_Type");
 
-                        // Ensure two decimal places for all numbers
-                        detail.price.original.recommendedRetailPrice =
-                          parseFloat(
-                            detail.price.original.recommendedRetailPrice.toFixed(
-                              2
-                            )
-                          );
-                      }
+          if (isAdultDiscountType === "true" && discountValue) {
+            ageBands.forEach((ageBand) => {
+              const discountKey = `${ageBand.toLowerCase()}DiscValue`;
+              const discountPercentage = parseFloat(discountValue[discountKey]);
+
+              if (discountPercentage) {
+                data.bookableItems.forEach((product) => {
+                  product.seasons.forEach((season) => {
+                    season.pricingRecords.forEach((record) => {
+                      record.pricingDetails.forEach((detail) => {
+                        if (detail.ageBand === ageBand) {
+                          detail.price.original.recommendedRetailPrice -=
+                            (detail.price.original.recommendedRetailPrice *
+                              discountPercentage) /
+                            100;
+
+                          // Ensure two decimal places for all numbers
+                          detail.price.original.recommendedRetailPrice =
+                            parseFloat(
+                              detail.price.original.recommendedRetailPrice.toFixed(
+                                2
+                              )
+                            );
+                        }
+                      });
                     });
                   });
                 });
-              });
-            }
-          });
-        } else if (isAdultDiscountType === "false") {
-          // Additional logic for when ADULT_Disc_Type is false
-          ageBands.forEach((ageBand) => {
-            const discountKey = `${ageBand.toLowerCase()}DiscValue`;
-            const discountValueSet = parseFloat(discountValue[discountKey]);
+              }
+            });
+          } else if (isAdultDiscountType === "false") {
+            // Additional logic for when ADULT_Disc_Type is false
+            ageBands.forEach((ageBand) => {
+              const discountKey = `${ageBand.toLowerCase()}DiscValue`;
+              const discountValueSet = parseFloat(discountValue[discountKey]);
 
-            if (!isNaN(discountValueSet)) {
-              data.bookableItems.forEach((product) => {
-                product.seasons.forEach((season) => {
-                  season.pricingRecords.forEach((record) => {
-                    record.pricingDetails.forEach((detail) => {
-                      if (detail.ageBand === ageBand) {
-                        detail.price.original.recommendedRetailPrice -=
-                          discountValueSet;
+              if (!isNaN(discountValueSet)) {
+                data.bookableItems.forEach((product) => {
+                  product.seasons.forEach((season) => {
+                    season.pricingRecords.forEach((record) => {
+                      record.pricingDetails.forEach((detail) => {
+                        if (detail.ageBand === ageBand) {
+                          detail.price.original.recommendedRetailPrice -=
+                            discountValueSet;
 
-                        // Ensure two decimal places for all numbers
-                        detail.price.original.recommendedRetailPrice =
-                          parseFloat(
-                            detail.price.original.recommendedRetailPrice.toFixed(
-                              2
-                            )
-                          );
-                      }
+                          // Ensure two decimal places for all numbers
+                          detail.price.original.recommendedRetailPrice =
+                            parseFloat(
+                              detail.price.original.recommendedRetailPrice.toFixed(
+                                2
+                              )
+                            );
+                        }
+                      });
                     });
                   });
                 });
-              });
-            }
-          });
+              }
+            });
+          }
+
+          localStorage.setItem("data", JSON.stringify(data));
+
+          // Decode the HTML entities before saving to local storage
+          const decodedValue = document.createElement("textarea");
+          decodedValue.innerHTML = cmsFieldValue;
+          const decodedText = decodedValue.value;
+
+          // Save the decoded value to local storage
+          localStorage.setItem("name", decodedText);
+
+          console.log("Updated local storage");
+
+          var button = document.querySelector(".button_availability");
+          button.classList.add("spinner");
+
+          // make your AJAX request here, and when you get a response, remove the spinner class:
+          setTimeout(function () {
+            button.classList.remove("spinner");
+            window.location.href = "/app/availability-schedule";
+          }, 5000);
+        })
+        .catch((error) => console.log("error", error));
+    } else if (offerSubType === "[Travel] Direct - Free Sell Activities") {
+      const key = "experienceImage";
+      localStorage.setItem(key, experience_image);
+
+      function createDateRange(startDate, endDate) {
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        let dateRange = [];
+
+        while (start <= end) {
+          // This line adds the date in 'YYYY-MM-DD' format to the array
+          dateRange.push(start.toISOString().split("T")[0]);
+          start.setDate(start.getDate() + 1);
         }
 
-        localStorage.setItem("data", JSON.stringify(data));
-
-        // Decode the HTML entities before saving to local storage
-        const decodedValue = document.createElement("textarea");
-        decodedValue.innerHTML = cmsFieldValue;
-        const decodedText = decodedValue.value;
-
-        // Save the decoded value to local storage
-        localStorage.setItem("name", decodedText);
-
-        console.log("Updated local storage");
-
-        var button = document.querySelector(".button_availability");
-        button.classList.add("spinner");
-
-        // make your AJAX request here, and when you get a response, remove the spinner class:
-        setTimeout(function () {
-          button.classList.remove("spinner");
-          window.location.href = "/app/availability-schedule";
-        }, 5000);
-      })
-      .catch((error) => console.log("error", error));
-  } else if (offerSubType === "[Travel] Direct - Free Sell Activities") {
-    const key = "experienceImage";
-    localStorage.setItem(key, experience_image);
-
-    function createDateRange(startDate, endDate) {
-      let start = new Date(startDate);
-      let end = new Date(endDate);
-      let dateRange = [];
-
-      while (start <= end) {
-        // This line adds the date in 'YYYY-MM-DD' format to the array
-        dateRange.push(start.toISOString().split("T")[0]);
-        start.setDate(start.getDate() + 1);
+        return dateRange;
       }
 
-      return dateRange;
-    }
+      // Usage function
+      let startDate = redeemStartDate;
+      let endDate = redeemEndDate;
+      let range = createDateRange(startDate, endDate);
 
-    // Usage function
-    let startDate = redeemStartDate;
-    let endDate = redeemEndDate;
-    let range = createDateRange(startDate, endDate);
+      console.log(range); // This will log the array of date strings in 'YYYY-MM-DD' format
 
-    console.log(range); // This will log the array of date strings in 'YYYY-MM-DD' format
+      const storedDiscountValue = localStorage.getItem("discountValue");
+      const discountValue = JSON.parse(storedDiscountValue);
 
-    const storedDiscountValue = localStorage.getItem("discountValue");
-    const discountValue = JSON.parse(storedDiscountValue);
+      const ageBands = [
+        "ADULT",
+        "SENIOR",
+        "CHILD",
+        "YOUTH",
+        "INFANT",
+        "TRAVELER",
+      ];
 
-    const ageBands = [
-      "ADULT",
-      "SENIOR",
-      "CHILD",
-      "YOUTH",
-      "INFANT",
-      "TRAVELER",
-    ];
+      let adultPricingDetail;
+      let youthPricingDetail;
+      let infantPricingDetail;
+      let childPricingDetail;
+      let seniorPricingDetail;
+      let travelerPricingDetail;
 
-    let adultPricingDetail;
-    let youthPricingDetail;
-    let infantPricingDetail;
-    let childPricingDetail;
-    let seniorPricingDetail;
-    let travelerPricingDetail;
+      if (typeof ADULT_recommendedRetailPrice !== "undefined") {
+        console.log("Adult RRP", ADULT_recommendedRetailPrice);
 
-    if (typeof ADULT_recommendedRetailPrice !== "undefined") {
-      console.log("Adult RRP", ADULT_recommendedRetailPrice);
-
-      adultPricingDetail = {
-        pricingPackageType: "PER_PERSON",
-        minTravelers: 1,
-        ageBand: "ADULT",
-        price: {
-          original: {
-            recommendedRetailPrice: ADULT_recommendedRetailPrice, // Assuming this is a variable defined elsewhere
-            partnerNetPrice: 0.0,
-            bookingFee: 0.0,
-            partnerTotalPrice: 0.0,
-          },
-        },
-      };
-    }
-
-    if (typeof SENIOR_recommendedRetailPrice !== "undefined") {
-      console.log("Senior RRP", SENIOR_recommendedRetailPrice);
-      seniorPricingDetail = {
-        pricingPackageType: "PER_PERSON",
-        minTravelers: 0,
-        ageBand: "SENIOR",
-        price: {
-          original: {
-            recommendedRetailPrice: SENIOR_recommendedRetailPrice, // Assuming this is a variable defined elsewhere
-            partnerNetPrice: 0.0,
-            bookingFee: 0.0,
-            partnerTotalPrice: 0.0,
-          },
-        },
-      };
-    }
-
-    if (typeof CHILD_recommendedRetailPrice !== "undefined") {
-      console.log("Child RRP", CHILD_recommendedRetailPrice);
-      childPricingDetail = {
-        pricingPackageType: "PER_PERSON",
-        minTravelers: 0,
-        ageBand: "CHILD",
-        price: {
-          original: {
-            recommendedRetailPrice: CHILD_recommendedRetailPrice, // Define or calculate the child price
-            partnerNetPrice: 0.0, // Adjust as needed
-            bookingFee: 0.0, // Adjust as needed
-            partnerTotalPrice: 0.0, // Adjust as needed
-          },
-        },
-      };
-    }
-
-    if (typeof YOUTH_recommendedRetailPrice !== "undefined") {
-      console.log("Youth RRP", YOUTH_recommendedRetailPrice);
-      youthPricingDetail = {
-        pricingPackageType: "PER_PERSON",
-        minTravelers: 0,
-        ageBand: "YOUTH",
-        price: {
-          original: {
-            recommendedRetailPrice: YOUTH_recommendedRetailPrice, // Define or calculate the child price
-            partnerNetPrice: 0.0, // Adjust as needed
-            bookingFee: 0.0, // Adjust as needed
-            partnerTotalPrice: 0.0, // Adjust as needed
-          },
-        },
-      };
-    }
-
-    if (typeof INFANT_recommendedRetailPrice !== "undefined") {
-      infantPricingDetail = {
-        pricingPackageType: "PER_PERSON",
-        minTravelers: 0,
-        ageBand: "INFANT",
-        price: {
-          original: {
-            recommendedRetailPrice: INFANT_recommendedRetailPrice, // Define or calculate the child price
-            partnerNetPrice: 0.0, // Adjust as needed
-            bookingFee: 0.0, // Adjust as needed
-            partnerTotalPrice: 0.0, // Adjust as needed
-          },
-        },
-      };
-
-      if (
-        typeof TRAVELER_recommendedRetailPrice !== "undefined" ||
-        TRAVELER_recommendedRetailPrice
-      ) {
-        travelerPricingDetail = {
+        adultPricingDetail = {
           pricingPackageType: "PER_PERSON",
-          minTravelers: 0,
-          ageBand: "TRAVELER",
+          minTravelers: 1,
+          ageBand: "ADULT",
           price: {
             original: {
-              recommendedRetailPrice: TRAVELER_recommendedRetailPrice, // Define or calculate the child price
+              recommendedRetailPrice: ADULT_recommendedRetailPrice, // Assuming this is a variable defined elsewhere
+              partnerNetPrice: 0.0,
+              bookingFee: 0.0,
+              partnerTotalPrice: 0.0,
+            },
+          },
+        };
+      }
+
+      if (typeof SENIOR_recommendedRetailPrice !== "undefined") {
+        console.log("Senior RRP", SENIOR_recommendedRetailPrice);
+        seniorPricingDetail = {
+          pricingPackageType: "PER_PERSON",
+          minTravelers: 0,
+          ageBand: "SENIOR",
+          price: {
+            original: {
+              recommendedRetailPrice: SENIOR_recommendedRetailPrice, // Assuming this is a variable defined elsewhere
+              partnerNetPrice: 0.0,
+              bookingFee: 0.0,
+              partnerTotalPrice: 0.0,
+            },
+          },
+        };
+      }
+
+      if (typeof CHILD_recommendedRetailPrice !== "undefined") {
+        console.log("Child RRP", CHILD_recommendedRetailPrice);
+        childPricingDetail = {
+          pricingPackageType: "PER_PERSON",
+          minTravelers: 0,
+          ageBand: "CHILD",
+          price: {
+            original: {
+              recommendedRetailPrice: CHILD_recommendedRetailPrice, // Define or calculate the child price
               partnerNetPrice: 0.0, // Adjust as needed
               bookingFee: 0.0, // Adjust as needed
               partnerTotalPrice: 0.0, // Adjust as needed
@@ -392,143 +347,196 @@ getTicketsButtonViator.addEventListener("click", function () {
           },
         };
       }
-    }
-    const pricingRecord = {
-      daysOfWeek: [
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY",
-      ],
-      pricingDetails: [
-        adultPricingDetail,
-        childPricingDetail,
-        seniorPricingDetail,
-        infantPricingDetail,
-        travelerPricingDetail,
-        youthPricingDetail,
-      ].filter((detail) => detail !== undefined),
-    };
 
-    // Define pricingRecords here
-    const pricingRecords = [pricingRecord]; // This is an array of pricingRecord objects
-    let unavailableDates = [];
-    const seasons = [
-      {
-        startDate: startDate,
-        endDate: endDate,
-        pricingRecords:
-          pricingRecords.length > 0 ? pricingRecords : [pricingRecord],
-        unavailableDates:
-          unavailableDates.length > 0 ? unavailableDates : [unavailableDates],
-      },
-    ];
-    let operatingHours = [];
-
-    // Constructing the bookableItems object
-    const bookableItems = [
-      {
-        seasons: seasons,
-        operatingHours: operatingHours,
-      },
-    ];
-
-    // Constructing the object
-    const dataObject = {
-      productCode: productCode,
-      bookableItems: bookableItems,
-      currency: currency,
-      summary: summary,
-    };
-    let data = dataObject;
-    console.log(dataObject);
-
-    const isAdultDiscountType = localStorage.getItem("ADULT_Disc_Type");
-
-    if (isAdultDiscountType === "true" && discountValue) {
-      ageBands.forEach((ageBand) => {
-        const discountKey = `${ageBand.toLowerCase()}DiscValue`;
-        const discountPercentage = parseFloat(discountValue[discountKey]);
-
-        if (discountPercentage) {
-          data.bookableItems.forEach((product) => {
-            product.seasons.forEach((season) => {
-              season.pricingRecords.forEach((record) => {
-                record.pricingDetails.forEach((detail) => {
-                  if (detail.ageBand === ageBand) {
-                    detail.price.original.recommendedRetailPrice -=
-                      (detail.price.original.recommendedRetailPrice *
-                        discountPercentage) /
-                      100;
-
-                    // Ensure two decimal places for all numbers
-                    detail.price.original.recommendedRetailPrice = parseFloat(
-                      detail.price.original.recommendedRetailPrice.toFixed(2)
-                    );
-                  }
-                });
-              });
-            });
-          });
-        }
-      });
-    } else if (isAdultDiscountType === "false") {
-      // Additional logic for when ADULT_Disc_Type is false
-      ageBands.forEach((ageBand) => {
-        const discountKey = `${ageBand.toLowerCase()}DiscValue`;
-        const discountValueSet = parseFloat(discountValue[discountKey]);
-
-        if (!isNaN(discountValueSet)) {
-          data.bookableItems.forEach((product) => {
-            product.seasons.forEach((season) => {
-              season.pricingRecords.forEach((record) => {
-                record.pricingDetails.forEach((detail) => {
-                  if (detail.ageBand === ageBand) {
-                    detail.price.original.recommendedRetailPrice -=
-                      discountValueSet;
-
-                    // Ensure two decimal places for all numbers
-                    detail.price.original.recommendedRetailPrice = parseFloat(
-                      detail.price.original.recommendedRetailPrice.toFixed(2)
-                    );
-                  }
-                });
-              });
-            });
-          });
-        }
-      });
-    }
-
-    localStorage.setItem("data", JSON.stringify(data));
-
-    // Decode the HTML entities before saving to local storage
-    const decodedValue = document.createElement("textarea");
-    decodedValue.innerHTML = cmsFieldValue;
-    const decodedText = decodedValue.value;
-
-    // Save the decoded value to local storage
-    localStorage.setItem("name", decodedText);
-
-    console.log("Updated local storage");
-
-    var button = document.querySelector(".button_availability");
-    button.classList.add("spinner");
-
-    // make your AJAX request here, and when you get a response, remove the spinner class:
-    setTimeout(function () {
-      button.classList.remove("spinner");
-
-      if (offerSubType === "[Travel] Direct - Free Sell Activities") {
-        window.location.href = "/app/select-tickets";
-      } else {
-        window.location.href = "/app/availability-schedule";
+      if (typeof YOUTH_recommendedRetailPrice !== "undefined") {
+        console.log("Youth RRP", YOUTH_recommendedRetailPrice);
+        youthPricingDetail = {
+          pricingPackageType: "PER_PERSON",
+          minTravelers: 0,
+          ageBand: "YOUTH",
+          price: {
+            original: {
+              recommendedRetailPrice: YOUTH_recommendedRetailPrice, // Define or calculate the child price
+              partnerNetPrice: 0.0, // Adjust as needed
+              bookingFee: 0.0, // Adjust as needed
+              partnerTotalPrice: 0.0, // Adjust as needed
+            },
+          },
+        };
       }
-    }, 5000);
-  } else {
-    console.log("No Sub Offer Type");
-  }
-});
+
+      if (typeof INFANT_recommendedRetailPrice !== "undefined") {
+        infantPricingDetail = {
+          pricingPackageType: "PER_PERSON",
+          minTravelers: 0,
+          ageBand: "INFANT",
+          price: {
+            original: {
+              recommendedRetailPrice: INFANT_recommendedRetailPrice, // Define or calculate the child price
+              partnerNetPrice: 0.0, // Adjust as needed
+              bookingFee: 0.0, // Adjust as needed
+              partnerTotalPrice: 0.0, // Adjust as needed
+            },
+          },
+        };
+
+        if (
+          typeof TRAVELER_recommendedRetailPrice !== "undefined" ||
+          TRAVELER_recommendedRetailPrice
+        ) {
+          travelerPricingDetail = {
+            pricingPackageType: "PER_PERSON",
+            minTravelers: 0,
+            ageBand: "TRAVELER",
+            price: {
+              original: {
+                recommendedRetailPrice: TRAVELER_recommendedRetailPrice, // Define or calculate the child price
+                partnerNetPrice: 0.0, // Adjust as needed
+                bookingFee: 0.0, // Adjust as needed
+                partnerTotalPrice: 0.0, // Adjust as needed
+              },
+            },
+          };
+        }
+      }
+      const pricingRecord = {
+        daysOfWeek: [
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY",
+          "SUNDAY",
+        ],
+        pricingDetails: [
+          adultPricingDetail,
+          childPricingDetail,
+          seniorPricingDetail,
+          infantPricingDetail,
+          travelerPricingDetail,
+          youthPricingDetail,
+        ].filter((detail) => detail !== undefined),
+      };
+
+      // Define pricingRecords here
+      const pricingRecords = [pricingRecord]; // This is an array of pricingRecord objects
+      let unavailableDates = [];
+      const seasons = [
+        {
+          startDate: startDate,
+          endDate: endDate,
+          pricingRecords:
+            pricingRecords.length > 0 ? pricingRecords : [pricingRecord],
+          unavailableDates:
+            unavailableDates.length > 0 ? unavailableDates : [unavailableDates],
+        },
+      ];
+      let operatingHours = [];
+
+      // Constructing the bookableItems object
+      const bookableItems = [
+        {
+          seasons: seasons,
+          operatingHours: operatingHours,
+        },
+      ];
+
+      // Constructing the object
+      const dataObject = {
+        productCode: productCode,
+        bookableItems: bookableItems,
+        currency: currency,
+        summary: summary,
+      };
+      let data = dataObject;
+      console.log(dataObject);
+
+      const isAdultDiscountType = localStorage.getItem("ADULT_Disc_Type");
+
+      if (isAdultDiscountType === "true" && discountValue) {
+        ageBands.forEach((ageBand) => {
+          const discountKey = `${ageBand.toLowerCase()}DiscValue`;
+          const discountPercentage = parseFloat(discountValue[discountKey]);
+
+          if (discountPercentage) {
+            data.bookableItems.forEach((product) => {
+              product.seasons.forEach((season) => {
+                season.pricingRecords.forEach((record) => {
+                  record.pricingDetails.forEach((detail) => {
+                    if (detail.ageBand === ageBand) {
+                      detail.price.original.recommendedRetailPrice -=
+                        (detail.price.original.recommendedRetailPrice *
+                          discountPercentage) /
+                        100;
+
+                      // Ensure two decimal places for all numbers
+                      detail.price.original.recommendedRetailPrice = parseFloat(
+                        detail.price.original.recommendedRetailPrice.toFixed(2)
+                      );
+                    }
+                  });
+                });
+              });
+            });
+          }
+        });
+      } else if (isAdultDiscountType === "false") {
+        // Additional logic for when ADULT_Disc_Type is false
+        ageBands.forEach((ageBand) => {
+          const discountKey = `${ageBand.toLowerCase()}DiscValue`;
+          const discountValueSet = parseFloat(discountValue[discountKey]);
+
+          if (!isNaN(discountValueSet)) {
+            data.bookableItems.forEach((product) => {
+              product.seasons.forEach((season) => {
+                season.pricingRecords.forEach((record) => {
+                  record.pricingDetails.forEach((detail) => {
+                    if (detail.ageBand === ageBand) {
+                      detail.price.original.recommendedRetailPrice -=
+                        discountValueSet;
+
+                      // Ensure two decimal places for all numbers
+                      detail.price.original.recommendedRetailPrice = parseFloat(
+                        detail.price.original.recommendedRetailPrice.toFixed(2)
+                      );
+                    }
+                  });
+                });
+              });
+            });
+          }
+        });
+      }
+
+      localStorage.setItem("data", JSON.stringify(data));
+
+      // Decode the HTML entities before saving to local storage
+      const decodedValue = document.createElement("textarea");
+      decodedValue.innerHTML = cmsFieldValue;
+      const decodedText = decodedValue.value;
+
+      // Save the decoded value to local storage
+      localStorage.setItem("name", decodedText);
+
+      console.log("Updated local storage");
+
+      var button = document.querySelector(".button_availability");
+      button.classList.add("spinner");
+
+      // make your AJAX request here, and when you get a response, remove the spinner class:
+      setTimeout(function () {
+        button.classList.remove("spinner");
+
+        if (offerSubType === "[Travel] Direct - Free Sell Activities") {
+          window.location.href = "/app/select-tickets";
+        } else {
+          window.location.href = "/app/availability-schedule";
+        }
+      }, 5000);
+    } else {
+      console.log("No Sub Offer Type");
+    }
+  },
+  { passive: false }
+);
