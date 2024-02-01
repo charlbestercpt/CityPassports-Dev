@@ -149,7 +149,7 @@ async function seeOption() {
         let see_options = {
           currency: pricingData.currency,
           productCode: pricingData.productCode,
-          travelDate: travel_date, // Replace with actual travel date
+          travelDate: "2024-12-12", // openDate
           bookableItems: [
             {
               available: true,
@@ -333,7 +333,7 @@ async function seeOption() {
           }));
 
           let booking_hold = {
-            bookingRef: "TESTING", // Replace with actual booking reference if dynamic
+            bookingRef: "DIRECT", // Replace with actual booking reference if dynamic
             bookingHoldInfo: {
               availability: {
                 status: "HOLD_NOT_PROVIDED",
@@ -523,7 +523,7 @@ async function seeOption() {
             console.log(discountValue);
           }
           console.log("Updated local storage");
-          location.href = "/app/experience-options";
+          location.href = "/app/booking-questions";
         })
 
         .catch((error) => console.log("error", error));

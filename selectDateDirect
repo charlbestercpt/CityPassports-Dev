@@ -23,12 +23,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const buttonNext = document.getElementById("button_next");
 const buttonPrev = document.getElementById("button_prev");
+const buttonOptions2 = document.getElementById("see_options2");
 const selectTickets = document.getElementById("select-tickets");
+const selectTickets2 = document.getElementById("select-tickets2");
 const calendar = document.getElementById("Div_Calendar");
 const buttonOptions = document.getElementById("see_options");
 const dateSelection = document.getElementById("date_selection");
 const spacerDate = document.getElementById("spacer-date");
+const bookCalendar = localStorage.getItem("bookCalendar");
+const noBookCalendar = document.getElementById("see-options_no-cal");
+const bookCalendarshow = document.getElementById("see-options_cal");
 
+if (bookCalendar === true) {
+  console.log("bookCalendar is true");
+} else {
+  console.log("bookCalendar is false");
+}
 buttonNext.addEventListener("click", () => {
   // Check if 'currentDate' exists in localStorage
   if (localStorage.getItem("currentDate") !== null) {
@@ -39,6 +49,7 @@ buttonNext.addEventListener("click", () => {
     buttonOptions.style.display = "block";
     dateSelection.style.display = "flex";
     spacerDate.style.display = "block";
+    noBookCalendar.style.display = "none";
   } else {
     // Handle the case where 'currentDate' is not available
     console.log("currentDate not found in localStorage");

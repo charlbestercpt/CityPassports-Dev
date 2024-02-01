@@ -1,140 +1,7 @@
 localStorage.setItem("offerType", offerType);
 localStorage.setItem("offerSubType", offerSubType);
-console.log("test");
 
-if (offerSubType === "Travel - Direct Contract") {
-  // Code to execute if the condition is true
-  console.log("The offer type is a Direct Contract.");
-
-  const priceData = {
-    adultPrice: localStorage.getItem("ADULT_Price"),
-    seniorPrice: localStorage.getItem("SENIOR_Price"),
-    youthPrice: localStorage.getItem("YOUTH_Price"),
-    childPrice: localStorage.getItem("CHILD_Price"),
-    infantPrice: localStorage.getItem("INFANT_Price"),
-    travelerPrice: localStorage.getItem("TRAVELLER_Price"),
-  };
-  const filteredPriceData = {};
-  for (const key in priceData) {
-    const value = priceData[key];
-    if (value !== null && value !== undefined && value !== "") {
-      filteredPriceData[key] = value;
-    }
-  }
-
-  if (Object.keys(filteredPriceData).length !== 0) {
-    localStorage.setItem("priceData", JSON.stringify(filteredPriceData));
-    console.log(filteredPriceData);
-  }
-  const discountData = {
-    adultDiscType: localStorage.getItem("ADULT_Disc_Type"),
-    seniorDiscType: localStorage.getItem("SENIOR_Disc_Type"),
-    youthDiscType: localStorage.getItem("YOUTH_Disc_Type"),
-    childDiscType: localStorage.getItem("CHILD_Disc_Type"),
-    infantDiscType: localStorage.getItem("INFANT_Disc_Type"),
-    travelerDiscType: localStorage.getItem("TRAVELLER_Disc_Type"),
-  };
-  const filteredDiscountData = {};
-  for (const key in discountData) {
-    if (discountData[key] !== null && discountData[key] !== undefined) {
-      filteredDiscountData[key] = discountData[key];
-    }
-  }
-
-  if (Object.keys(filteredDiscountData).length > 0) {
-    localStorage.setItem("discountData", JSON.stringify(filteredDiscountData));
-    console.log(filteredDiscountData);
-  }
-  const discountValue = {
-    adultDiscValue: localStorage.getItem("ADULT_Disc_Value"),
-    seniorDiscValue: localStorage.getItem("SENIOR_Disc_Value"),
-    youthDiscValue: localStorage.getItem("YOUTH_Disc_Value"),
-    childDiscValue: localStorage.getItem("CHILD_Disc_Value"),
-    infantDiscValue: localStorage.getItem("INFANT_Disc_Value"),
-    travelerDiscValue: localStorage.getItem("TRAVELLER_Disc_Value"),
-  };
-
-  const filteredDiscountValue = {};
-  for (const key in discountValue) {
-    if (discountValue[key] !== null && discountValue[key] !== undefined) {
-      filteredDiscountValue[key] = discountValue[key];
-    }
-  }
-
-  if (Object.keys(filteredDiscountValue).length > 0) {
-    localStorage.setItem(
-      "discountValue",
-      JSON.stringify(filteredDiscountValue)
-    );
-    console.log(filteredDiscountValue);
-  }
-  //Create the Booking Questions Variable
-  let booking_questions = {
-    status: "ACTIVE",
-
-    bookingRequirements: {
-      minTravelersPerBooking: 1,
-      maxTravelersPerBooking: 10,
-      requiresAdultForBooking: false,
-    },
-
-    bookingQuestions: [
-      "AGEBAND",
-      "FULL_NAMES_FIRST",
-      "FULL_NAMES_LAST",
-      "SPECIAL_REQUIREMENTS",
-    ],
-
-    pricingInfo: {
-      type: "PER_PERSON",
-      ageBands: [
-        {
-          ageBand: "CHILD",
-          startAge: 5,
-          endAge: 12,
-          minTravelersPerBooking: 0,
-          maxTravelersPerBooking: 9,
-          description: localStorage.getItem("CHILD_description"),
-        },
-        {
-          ageBand: "YOUTH",
-          startAge: 13,
-          endAge: 18,
-          minTravelersPerBooking: 0,
-          maxTravelersPerBooking: 9,
-          description: localStorage.getItem("YOUTH_description"),
-        },
-        {
-          ageBand: "ADULT",
-          startAge: 19,
-          endAge: 64,
-          minTravelersPerBooking: 0,
-          maxTravelersPerBooking: 9,
-          description: localStorage.getItem("ADULT_description"),
-        },
-        {
-          ageBand: "SENIOR",
-          startAge: 65,
-          endAge: 99,
-          minTravelersPerBooking: 0,
-          maxTravelersPerBooking: 9,
-          description: localStorage.getItem("SENIOR_description"),
-        },
-        {
-          ageBand: "INFANT",
-          startAge: 5,
-          endAge: 12,
-          minTravelersPerBooking: 0,
-          maxTravelersPerBooking: 9,
-          description: localStorage.getItem("INFANT_description"),
-        },
-      ],
-    },
-  };
-
-  // Save booking_questions to localStorage
-  localStorage.setItem("booking_questions", JSON.stringify(booking_questions));
-} else if (offerSubType === "Travel - Viator Wholesale") {
+if (offerSubType === "Travel - Viator Wholesale") {
   // Code to execute if the condition is true
   console.log("The offer type is Viator Wholesale.");
 
@@ -201,7 +68,7 @@ if (offerSubType === "Travel - Direct Contract") {
     console.log(filteredDiscountValue);
   }
 } else {
-  console.log("Offer Sub Type Not Defined");
+  console.log("Sub Type Not Viator");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -228,10 +95,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Get button element
-const availabilityButton = document.getElementById("button_availability");
+const getTicketsButtonViator = document.getElementById(
+  "button-get_tickets_viator"
+);
 
 // Add a click event listener to that element
-availabilityButton.addEventListener("click", function () {
+getTicketsButtonViator.addEventListener("click", function () {
   // Here you can include your if-else logic
   if (offerSubType === "Travel - Viator Wholesale") {
     const key = "experienceImage";
@@ -377,7 +246,7 @@ availabilityButton.addEventListener("click", function () {
         }, 5000);
       })
       .catch((error) => console.log("error", error));
-  } else if (offerSubType === "Travel - Direct Contract") {
+  } else if (offerSubType === "[Travel] Direct - Free Sell Activities") {
     const key = "experienceImage";
     localStorage.setItem(key, experience_image);
 
@@ -652,7 +521,12 @@ availabilityButton.addEventListener("click", function () {
     // make your AJAX request here, and when you get a response, remove the spinner class:
     setTimeout(function () {
       button.classList.remove("spinner");
-      window.location.href = "/app/availability-schedule";
+
+      if (offerSubType === "[Travel] Direct - Free Sell Activities") {
+        window.location.href = "/app/select-tickets";
+      } else {
+        window.location.href = "/app/availability-schedule";
+      }
     }, 5000);
   } else {
     console.log("No Sub Offer Type");

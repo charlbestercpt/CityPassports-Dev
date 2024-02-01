@@ -445,9 +445,14 @@ function getAllUnavailableDates(data) {
   data.bookableItems.forEach((item) => {
     item.seasons.forEach((season) => {
       season.pricingRecords.forEach((pricingRecord) => {
-        allUnavailableDates = allUnavailableDates.concat(
-          pricingRecord.unavailableDates.map((dateEntry) => dateEntry.date)
-        );
+        if (
+          pricingRecord.unavailableDates &&
+          Array.isArray(pricingRecord.unavailableDates)
+        ) {
+          allUnavailableDates = allUnavailableDates.concat(
+            pricingRecord.unavailableDates.map((dateEntry) => dateEntry.date)
+          );
+        }
       });
     });
   });

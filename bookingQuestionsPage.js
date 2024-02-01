@@ -1,8 +1,9 @@
 const offerSubType = localStorage.getItem("offerSubType");
 const offerType = localStorage.getItem("offerType");
-
-if (offerSubType === "Travel - Direct Contract") {
-}
+const redeemStartDate = localStorage.getItem("redeemStartDate");
+const redeemEndDate = localStorage.getItem("redeemEndDate");
+const pipedriveId = localStorage.getItem("pipedriveId");
+console.log(redeemStartDate);
 
 const ageBandOrder = ["adult", "senior", "youth", "child", "infant"];
 paxMixObj.sort(
@@ -256,6 +257,96 @@ $(document).ready(function () {
       }
     });
 
+    if (offerSubType === "[Travel] Direct - Free Sell Activities") {
+      const bookingHold = JSON.parse(localStorage.getItem("booking_hold"));
+      let bookingHold2 = bookingHold;
+
+      const ageBandInfo = {};
+      const discountValue = parseFloat(
+        localStorage.getItem("ADULT_Disc_Value")
+      );
+
+      if (discountValue > 0) {
+        console.log("Discount value more than 0");
+
+        // Initialize a variable to store the total recommended retail price
+        let totalRecommendedRetailPrice = 0;
+
+        bookingHold2.lineItems.forEach((lineItem) => {
+          const ageBand = lineItem.ageBand;
+
+          // switch (ageBand) {
+          //   case "ADULT":
+          //   case "SENIOR":
+          //   case "YOUTH":
+          //   case "CHILD":
+          //   case "INFANT":
+          //   case "TRAVELER":
+          //     lineItem.subtotalPrice.price.recommendedRetailPrice -=
+          //       discountValue;
+          //     lineItem.subtotalPrice.price.recommendedRetailPrice =
+          //       Math.ceil(
+          //         lineItem.subtotalPrice.price.recommendedRetailPrice / 0.05
+          //       ) * 0.05;
+          //     break;
+          //   // Add additional cases if needed for other ageBands
+
+          //   default:
+          //     // Handle the default case here if necessary
+          //     break;
+          // }
+
+          // Add the updated recommendedRetailPrice to the total
+          totalRecommendedRetailPrice +=
+            lineItem.subtotalPrice.price.recommendedRetailPrice;
+        });
+
+        // Update the totalPrice's recommendedRetailPrice with the total
+        bookingHold2.totalPrice.price.recommendedRetailPrice =
+          totalRecommendedRetailPrice;
+
+        console.log(bookingHold2);
+        const updatedDataJson2 = JSON.stringify(bookingHold2);
+        localStorage.setItem("booking_hold2", updatedDataJson2);
+        bookingHold2.lineItems.forEach((lineItem) => {
+          const ageBand = lineItem.ageBand;
+          const numberOfTravelers = lineItem.numberOfTravelers;
+          const price = lineItem.subtotalPrice.price.recommendedRetailPrice;
+          ageBandInfo[ageBand] = { numberOfTravelers, price };
+        });
+      } else {
+        bookingHold.lineItems.forEach((lineItem) => {
+          const ageBand = lineItem.ageBand;
+          const numberOfTravelers = lineItem.numberOfTravelers;
+          const price = lineItem.subtotalPrice.price.recommendedRetailPrice;
+          ageBandInfo[ageBand] = { numberOfTravelers, price };
+        });
+      }
+
+      //change booking_hold2 structure
+      bookingHold2.lineItems.forEach((lineItem) => {
+        lineItem.subtotalPrice.price = {
+          sellPrice: lineItem.subtotalPrice.price.recommendedRetailPrice,
+        };
+      });
+
+      // Modify the total price
+      bookingHold2.totalPrice.price = {
+        sellPrice: bookingHold2.totalPrice.price.recommendedRetailPrice,
+      };
+
+      // Remove unnecessary fields if they exist
+      if (bookingHold2.bookingRef) delete bookingHold2.bookingRef;
+      if (bookingHold2.bookingHoldInfo) delete bookingHold2.bookingHoldInfo;
+
+      // Convert the updated data back to JSON
+      const updatedDataJson2 = JSON.stringify(bookingHold2);
+      localStorage.setItem("booking_hold2", updatedDataJson2);
+
+      const ageBandInfoString = JSON.stringify(ageBandInfo);
+      localStorage.setItem("age_band_info", ageBandInfoString);
+    }
+
     booking_hold2 = JSON.parse(localStorage.getItem("booking_hold2"));
     const stripeBodyForRequest = {
       event_image: eventImage,
@@ -281,6 +372,9 @@ $(document).ready(function () {
       ageBandInfo: ageBandInfo,
       productCode: data.productCode,
       pickupAddress: localStorage.getItem("selectedLocationDetails"),
+      redeemStartDate: localStorage.getItem("redeemStartDate"),
+      redeemEndDate: localStorage.getItem("redeemEndDate"),
+      pipedriveID: localStorage.getItem("pipedriveId"),
     };
 
     const stripeData = JSON.stringify(stripeBodyForRequest);
