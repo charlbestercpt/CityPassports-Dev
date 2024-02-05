@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
     myProfile.style.display = "none"; // Hide myProfile
     myBookings.style.display = "none";
     navMenu.style.display = "none";
+    navOverlay.style.display = "none";
     // Optionally, if you want to show myBookings when passed_button is clicked:
     // const myBookings = document.getElementById("my-bookings");
     // myBookings.style.display = "block";
@@ -52,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
     myProfile.style.display = "none"; // Hide myProfile
     myBookings.style.display = "block";
     navMenu.style.display = "none";
+    navOverlay.style.display = "none";
     // Optionally, if you want to show myBookings when passed_button is clicked:
     // const myBookings = document.getElementById("my-bookings");
     // myBookings.style.display = "block";
@@ -62,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     myProfile.style.display = "block"; // Hide myProfile
     myBookings.style.display = "none";
     navMenu.style.display = "none";
+    navOverlay.style.display = "none";
     // Optionally, if you want to show myBookings when passed_button is clicked:
     // const myBookings = document.getElementById("my-bookings");
     // myBookings.style.display = "block";
