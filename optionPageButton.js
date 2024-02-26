@@ -84,7 +84,7 @@ async function bookingHold() {
   }
   const result = await response.text();
   const parsedData = JSON.parse(result);
-
+  console.log(parsedData);
   // Define the desired order of age bands
   const desiredOrder = [
     "ADULT",
