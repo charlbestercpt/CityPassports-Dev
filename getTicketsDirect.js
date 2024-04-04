@@ -1,6 +1,19 @@
 localStorage.setItem("offerType", offerType);
 localStorage.setItem("offerSubType", offerSubType);
+localStorage.setItem("bookCalendar", bookCalendar);
 console.log("Book With Calendar", bookCalendar);
+console.log("Currency", currency);
+
+// Split the string into an array of date strings, taking care to trim whitespace
+let dateArray = unavailableDatesRaw.split(",").map((date) => date.trim());
+
+// Map over the array to create an array of objects
+let unavailableDates = dateArray.map((date) => ({
+  date: date,
+  reason: "SOLD_OUT",
+}));
+
+console.log(unavailableDates);
 
 if (
   offerSubType === "[Travel] Direct - Free Sell Activities" &&
@@ -145,8 +158,6 @@ if (
 ) {
   // Code to execute if the condition is true
   console.log("The offer type is a Direct Contract.");
-
-  //const bookCalendar =
 
   const priceData = {
     adultPrice: localStorage.getItem("ADULT_Price"),
@@ -310,6 +321,13 @@ const getTicketsButtonDirect = document.getElementById(
 
 // Add a click event listener to that element
 getTicketsButtonDirect.addEventListener("click", function () {
+  this.classList.add("spinner");
+
+  // make your AJAX request here, and when you get a response, remove the spinner class:
+  setTimeout(function () {
+    this.classList.remove("spinner");
+  }, 10000);
+
   // Here you can include your if-else logic
   if (
     offerSubType === "[Travel] Direct - Free Sell Activities" &&
@@ -461,8 +479,9 @@ getTicketsButtonDirect.addEventListener("click", function () {
         };
       }
     }
-    const pricingRecord = {
-      daysOfWeek: [
+
+    function convertToDaysOfWeek(dayOfWeekDirect) {
+      const daysOfWeekMap = [
         "MONDAY",
         "TUESDAY",
         "WEDNESDAY",
@@ -470,7 +489,33 @@ getTicketsButtonDirect.addEventListener("click", function () {
         "FRIDAY",
         "SATURDAY",
         "SUNDAY",
-      ],
+      ];
+
+      // Convert to array of days based on the input
+      const daysOfWeek = dayOfWeekDirect
+        .split(",")
+        .map((value, index) => {
+          if (value === "true") {
+            return daysOfWeekMap[index];
+          }
+        })
+        .filter(Boolean); // This removes any undefined values from the array
+
+      // Convert array to a string to store in localStorage
+      const daysOfWeekString = JSON.stringify(daysOfWeek);
+
+      // Save to localStorage
+      localStorage.setItem("daysOfWeek", daysOfWeekString);
+
+      return daysOfWeek;
+    }
+
+    // Example usage:
+    const daysOfWeek = convertToDaysOfWeek(daysOfWeekDirect);
+    console.log(daysOfWeek);
+
+    const pricingRecord = {
+      daysOfWeek,
       pricingDetails: [
         adultPricingDetail,
         childPricingDetail,
@@ -479,19 +524,18 @@ getTicketsButtonDirect.addEventListener("click", function () {
         travelerPricingDetail,
         youthPricingDetail,
       ].filter((detail) => detail !== undefined),
+      unavailableDates: unavailableDates,
     };
 
     // Define pricingRecords here
     const pricingRecords = [pricingRecord]; // This is an array of pricingRecord objects
-    let unavailableDates = [];
+
     const seasons = [
       {
         startDate: startDate,
         endDate: endDate,
         pricingRecords:
           pricingRecords.length > 0 ? pricingRecords : [pricingRecord],
-        unavailableDates:
-          unavailableDates.length > 0 ? unavailableDates : [unavailableDates],
       },
     ];
     let operatingHours = [];
@@ -499,6 +543,7 @@ getTicketsButtonDirect.addEventListener("click", function () {
     // Constructing the bookableItems object
     const bookableItems = [
       {
+        productCode: productCode,
         seasons: seasons,
         operatingHours: operatingHours,
       },
@@ -747,8 +792,9 @@ getTicketsButtonDirect.addEventListener("click", function () {
         };
       }
     }
-    const pricingRecord = {
-      daysOfWeek: [
+
+    function convertToDaysOfWeek(dayOfWeekDirect) {
+      const daysOfWeekMap = [
         "MONDAY",
         "TUESDAY",
         "WEDNESDAY",
@@ -756,7 +802,32 @@ getTicketsButtonDirect.addEventListener("click", function () {
         "FRIDAY",
         "SATURDAY",
         "SUNDAY",
-      ],
+      ];
+
+      // Convert to array of days based on the input
+      const daysOfWeek = dayOfWeekDirect
+        .split(",")
+        .map((value, index) => {
+          if (value === "true") {
+            return daysOfWeekMap[index];
+          }
+        })
+        .filter(Boolean); // This removes any undefined values from the array
+
+      // Convert array to a string to store in localStorage
+      const daysOfWeekString = JSON.stringify(daysOfWeek);
+
+      // Save to localStorage
+      localStorage.setItem("daysOfWeek", daysOfWeekString);
+
+      return daysOfWeek;
+    }
+
+    const daysOfWeek = convertToDaysOfWeek(daysOfWeekDirect);
+    console.log(daysOfWeek);
+
+    const pricingRecord = {
+      daysOfWeek,
       pricingDetails: [
         adultPricingDetail,
         childPricingDetail,
@@ -765,19 +836,18 @@ getTicketsButtonDirect.addEventListener("click", function () {
         travelerPricingDetail,
         youthPricingDetail,
       ].filter((detail) => detail !== undefined),
+      unavailableDates: unavailableDates,
     };
 
     // Define pricingRecords here
     const pricingRecords = [pricingRecord]; // This is an array of pricingRecord objects
-    let unavailableDates = [];
+
     const seasons = [
       {
         startDate: startDate,
         endDate: endDate,
         pricingRecords:
           pricingRecords.length > 0 ? pricingRecords : [pricingRecord],
-        unavailableDates:
-          unavailableDates.length > 0 ? unavailableDates : [unavailableDates],
       },
     ];
     let operatingHours = [];
@@ -785,6 +855,7 @@ getTicketsButtonDirect.addEventListener("click", function () {
     // Constructing the bookableItems object
     const bookableItems = [
       {
+        productOptionCode: "No Product Option Codes",
         seasons: seasons,
         operatingHours: operatingHours,
       },

@@ -6,7 +6,23 @@ const bookingsButton = document.getElementById("bookings_button");
 const profileButton = document.getElementById("profile_button");
 const navMenu = document.getElementById("navMenu");
 const navMobile = document.getElementById("navMobile");
+const closeButton = document.getElementById("redemptionClose");
+const modal = document.getElementById("redemptionModal");
 const navOverlay = document.getElementById("navOverlay");
+const redeemShow = document.getElementById("redeemVoucher");
+const voucherModal = document.getElementById("fs-modal-1-popup");
+
+//modal.style.display = "none";
+//voucherModal.style.display = "none";
+
+// redeemShow.addEventListener("click", function () {
+//   modal.style.display = "flex"; // Show the modal
+//   voucherModal.style.display = "none"; // Hide the voucher modal
+// });
+
+// closeButton.addEventListener("click", function () {
+//   modal.style.display = "none"; // Hide the modal
+// });
 
 // Function to toggle navMenu visibility
 function toggleNavMenu() {

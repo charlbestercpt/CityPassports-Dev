@@ -110,14 +110,17 @@ if (additionalQuestions) {
 }
 
 $(document).ready(function () {
+  $(".booking_question input_field").each(function () {
+    $(this).prop("required", true);
+  });
   //<submit>
   $("#checkout-submit").click(async function (e) {
+    // Adding the spinner class to the button
     e.preventDefault();
+    $(this).addClass("spinner");
 
-    var button = document.querySelector(".book_now");
-    button.classList.add("spinner");
     setTimeout(function () {
-      button.classList.remove("spinner");
+      this.classList.remove("spinner");
     }, 10000);
 
     let unit = 0;
