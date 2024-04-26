@@ -67,12 +67,12 @@ if (bookCalendar === true) {
 //   spacerDate.style.display = "none";
 // });
 
-// // Retrieve the string value from local storage
-// let str = localStorage.getItem("name");
-// console.log(str);
-// // Update the text content of the element with ID "exp-name"
-// document.getElementById("exp-name").textContent = str;
-// document.getElementById("exp-name2").textContent = str;
+// Retrieve the string value from local storage
+let str = localStorage.getItem("name");
+console.log(str);
+// Update the text content of the element with ID "exp-name"
+
+document.getElementById("exp-name2").textContent = str;
 
 $(".button_options.next").attr("disabled", true);
 var incrementPlus;

@@ -49,7 +49,6 @@ buttonNext.addEventListener("click", () => {
     buttonOptions.style.display = "block";
     dateSelection.style.display = "flex";
     spacerDate.style.display = "block";
-    noBookCalendar.style.display = "none";
   } else {
     // Handle the case where 'currentDate' is not available
     console.log("currentDate not found in localStorage");

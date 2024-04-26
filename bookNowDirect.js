@@ -31,19 +31,30 @@ async function seeOption() {
   const new_data = JSON.parse(localStorage.getItem("data"));
   const travellers = JSON.parse(localStorage.getItem("booking_questions"));
 
-  if (
-    sumValues(ageBand) < travellers.bookingRequirements.minTravelersPerBooking
-  ) {
-    $("#alert-text").text(
-      `A minimum of ${travellers.bookingRequirements.minTravelersPerBooking} travellers are required per booking.`
+  const totalTravelers = sumValues(ageBand);
+  console.log("Total travelers:", totalTravelers);
+
+  if (totalTravelers > travellers.bookingRequirements.maxTravelersPerBooking) {
+    console.log("Maximum travelers exceeded.");
+    alert(
+      `A maximum of ${travellers.bookingRequirements.minTravelersPerBooking} travellers are allowed per booking.`
     );
+    const button = document.querySelector(".button_options");
+    button.classList.remove("spinner");
+    button.textContent = "See Options";
+    return; // Exit the function without incrementing further
     $(".dark-overlay__availability").toggleClass("active");
   } else if (
-    sumValues(ageBand) > travellers.bookingRequirements.maxTravelersPerBooking
+    totalTravelers < travellers.bookingRequirements.minTravelersPerBooking
   ) {
-    $("#alert-text").text(
-      `A maximum of ${travellers.bookingRequirements.maxTravelersPerBooking} travellers allowed per booking. `
+    console.log("Minimum travelers not met.");
+    alert(
+      `A mimimum of ${travellers.bookingRequirements.minTravelersPerBooking} travellers are needed per booking.`
     );
+    const button = document.querySelector(".button_options");
+    button.classList.remove("spinner");
+    button.textContent = "See Options";
+    return; // Exit the function without incrementing further
     $(".dark-overlay__availability").toggleClass("active");
   } else {
     let product_code = new_data.productCode;

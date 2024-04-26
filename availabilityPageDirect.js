@@ -1,5 +1,27 @@
 const data = JSON.parse(localStorage.getItem("data"));
 
+function formatDate(dateString) {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 //set variables
 
 const getProductOptionCodes = (data) => {
@@ -1713,11 +1735,14 @@ $("#datepicker").datepicker({
     maxDate.setFullYear(currentDate.getFullYear() + 1); // Set max date
     inst.settings.maxDate = maxDate; // Update maxDate
   },
+
   onSelect: function (dateText) {
-    $("#selected_date").val(dateText);
-    localStorage.setItem("currentDate", dateText);
+    // const formattedDate = formatDate(dateText);
+    const formattedDate = dateText;
+    $("#selected_date").val(formattedDate);
+    localStorage.setItem("currentDate", formattedDate);
     $(".button_options.next").attr("disabled", false);
-    console.log(dateText);
+    console.log(formattedDate);
   },
   beforeShowDay: function (date) {
     const year = date.getFullYear();

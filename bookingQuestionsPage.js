@@ -3,6 +3,7 @@ const offerType = localStorage.getItem("offerType");
 const redeemStartDate = localStorage.getItem("redeemStartDate");
 const redeemEndDate = localStorage.getItem("redeemEndDate");
 const pipedriveId = localStorage.getItem("pipedriveId");
+const ms_data = localStorage.getItem("_ms-mem");
 console.log(redeemStartDate);
 
 const ageBandOrder = ["adult", "senior", "youth", "child", "infant"];
@@ -350,7 +351,10 @@ $(document).ready(function () {
       localStorage.setItem("age_band_info", ageBandInfoString);
     }
 
-    booking_hold2 = JSON.parse(localStorage.getItem("booking_hold2"));
+    const airtable_id = localStorage.getItem(
+      "ms_data.customFields.airtable-id"
+    );
+    const booking_hold2 = JSON.parse(localStorage.getItem("booking_hold2"));
     const stripeBodyForRequest = {
       event_image: eventImage,
       event_title: name,
@@ -363,7 +367,7 @@ $(document).ready(function () {
       xeroID: xeroID,
       xeroItemId: itemId,
       xeroSupplierId: supplierId,
-      airtableId: airtableId,
+      airtableId: airtable_id,
       offerType: offerType,
       offerSubType: offerSubType,
       stripe_customer_id: stripeCustomerId,
