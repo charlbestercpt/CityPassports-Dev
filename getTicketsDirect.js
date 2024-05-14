@@ -100,7 +100,7 @@ if (
       "AGEBAND",
       "FULL_NAMES_FIRST",
       "FULL_NAMES_LAST",
-      "SPECIAL_REQUIREMENTS",
+      // "SPECIAL_REQUIREMENTS",
     ],
 
     pricingInfo: {
@@ -235,7 +235,7 @@ if (
       "AGEBAND",
       "FULL_NAMES_FIRST",
       "FULL_NAMES_LAST",
-      "SPECIAL_REQUIREMENTS",
+      //  "SPECIAL_REQUIREMENTS",
     ],
 
     pricingInfo: {

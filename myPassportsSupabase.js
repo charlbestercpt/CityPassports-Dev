@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log(bookingInfo.associated_supplier);
                 console.log("bookingInfo", bookingInfo);
                 if (bookingInfo.is_redeemed === false) {
-                  console.log("false datata");
+                  console.log("booking not redeemed");
 
                   const bookingJSON = JSON.parse(bookingInfo.booking_json);
                   console.log(bookingJSON);
@@ -473,7 +473,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                   containerModal.appendChild(modalForm);
                   modalContentDiv2.appendChild(containerModal);
                 } else if (bookingInfo.is_redeemed === null) {
-                  console.log("false datata");
+                  console.log("booking redeemed is null");
 
                   const bookingJSON = JSON.parse(bookingInfo.booking_json);
                   console.log(bookingJSON);
@@ -801,7 +801,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                   containerModal.appendChild(modalForm);
                   modalContentDiv2.appendChild(containerModal);
                 } else {
-                  console.log("true datata");
+                  console.log("booking has been redeemed");
                   const bookingJSON = JSON.parse(bookingInfo.booking_json);
                   console.log(bookingJSON);
                   // Create a new div for the popup/modal
