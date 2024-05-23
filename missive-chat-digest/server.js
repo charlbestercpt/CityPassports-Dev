@@ -1,24 +1,3 @@
-async function generateDigest(secretKey, userEmail) {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secretKey);
-  const userEmailData = encoder.encode(userEmail);
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    keyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const signature = await crypto.subtle.sign("HMAC", key, userEmailData);
-  const digest = Array.from(new Uint8Array(signature))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-
-  return digest;
-}
-
 async function setupChat() {
   // Check if _ms-mem is in local storage
   const storedData = localStorage.getItem("_ms-mem");
@@ -30,12 +9,7 @@ async function setupChat() {
     const userFirstName = userData.customFields["first-name"];
     const userLastName = userData.customFields["last-name"];
     fullName = `${userFirstName} ${userLastName}`;
-
-    // Replace with your actual secret key
-    const secretKey = "ca2887525e1ffe209063b4e690389ab1";
-
-    // Generate the digest
-    digest = await generateDigest(secretKey, userEmail);
+    digest = userData.customFields["chat-digest"];
 
     console.log(`Digest for ${userEmail}: ${digest}`);
   } else {
