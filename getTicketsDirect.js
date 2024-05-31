@@ -1,5 +1,5 @@
 localStorage.setItem("offerType", offerType);
-localStorage.setItem("offerSubType", offerSubType);
+localStorage.setItem("supplierType", supplierType);
 localStorage.setItem("bookCalendar", bookCalendar);
 console.log("Book With Calendar", bookCalendar);
 console.log("Currency", currency);
@@ -16,7 +16,7 @@ let unavailableDates = dateArray.map((date) => ({
 console.log(unavailableDates);
 
 if (
-  offerSubType === "[Travel] Direct - Free Sell Activities" &&
+  offerType === "[Travel] Direct - Free Sell Activities" &&
   bookCalendar === "false"
 ) {
   // Code to execute if the condition is true
@@ -153,7 +153,7 @@ if (
   // Save booking_questions to localStorage
   localStorage.setItem("booking_questions", JSON.stringify(booking_questions));
 } else if (
-  offerSubType === "[Travel] Direct - Free Sell Activities" &&
+  offerType === "[Travel] Direct - Free Sell Activities" &&
   bookCalendar === "true"
 ) {
   // Code to execute if the condition is true
@@ -330,7 +330,7 @@ getTicketsButtonDirect.addEventListener("click", function () {
 
   // Here you can include your if-else logic
   if (
-    offerSubType === "[Travel] Direct - Free Sell Activities" &&
+    offerType === "[Travel] Direct - Free Sell Activities" &&
     bookCalendar === "false"
   ) {
     const key = "experienceImage";
@@ -635,14 +635,14 @@ getTicketsButtonDirect.addEventListener("click", function () {
     setTimeout(function () {
       button.classList.remove("spinner");
 
-      if (offerSubType === "[Travel] Direct - Free Sell Activities") {
+      if (offerType === "[Travel] Direct - Free Sell Activities") {
         window.location.href = "/app/select-tickets";
       } else {
         window.location.href = "/app/availability-schedule";
       }
     }, 5000);
   } else if (
-    offerSubType === "[Travel] Direct - Free Sell Activities" &&
+    offerType === "[Travel] Direct - Free Sell Activities" &&
     bookCalendar === "true"
   ) {
     console.log("Book With Cal");
@@ -948,7 +948,7 @@ getTicketsButtonDirect.addEventListener("click", function () {
       button.classList.remove("spinner");
 
       if (
-        offerSubType === "[Travel] Direct - Free Sell Activities" &&
+        offerType === "[Travel] Direct - Free Sell Activities" &&
         bookCalendar === "true"
       ) {
         window.location.href = "/app/availability-schedule-direct-sale";
