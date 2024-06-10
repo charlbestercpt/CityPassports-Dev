@@ -6,10 +6,9 @@ const _supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcGVjaW1jaG9jZnNmc2RncnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTAxNzAwODQsImV4cCI6MjAyNTc0NjA4NH0.zW29Q4AOTWDFRzr9Eueu4YzEjqCG8WqxTA-hQO-dij0"
 );
 
-console.log("Supabase Instance: ", _supabase);
+console.log("Supabase Initialized");
 const user = localStorage.getItem("_ms-mem");
 const userData = JSON.parse(user);
-console.log(userData);
 const userSupabaseID = userData.customFields["supabase-uuid"];
 
 // Function to retrieve email from localStorage
