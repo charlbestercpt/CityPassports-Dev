@@ -1,20 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Get the item from local storage
-
   const bookingQuestionsString = localStorage.getItem("booking_questions");
 
   if (bookingQuestionsString) {
-    // Parse the JSON data from local storage
     const parsedQuestions = JSON.parse(bookingQuestionsString);
-
-    // Access the languageGuides property or set it to "No-languageguides"
     const languageGuides =
       parsedQuestions.languageGuides || "No-languageguides";
-
-    // Save the languageGuides to local storage
     localStorage.setItem("languageGuides", JSON.stringify(languageGuides));
-
-    // Use the languageGuides constant as needed
     console.log(languageGuides);
   } else {
     console.log("No booking questions found in local storage.");
@@ -34,42 +25,38 @@ const bookCalendar = localStorage.getItem("bookCalendar");
 const noBookCalendar = document.getElementById("see-options_no-cal");
 const bookCalendarshow = document.getElementById("see-options_cal");
 
-if (bookCalendar === true) {
+if (bookCalendar === "true") {
   console.log("bookCalendar is true");
 } else {
   console.log("bookCalendar is false");
 }
+
 buttonNext.addEventListener("click", () => {
-  // Check if 'currentDate' exists in localStorage
   if (localStorage.getItem("currentDate") !== null) {
     selectTickets.style.display = "block";
     calendar.style.display = "none";
-    buttonNext.style.display = "none"; // hide the next button
+    buttonNext.style.display = "none";
     buttonPrev.style.display = "block";
     buttonOptions.style.display = "block";
     dateSelection.style.display = "flex";
     spacerDate.style.display = "block";
   } else {
-    // Handle the case where 'currentDate' is not available
     console.log("currentDate not found in localStorage");
-    // You can add any additional code here to handle this scenario
   }
 });
 
 buttonPrev.addEventListener("click", () => {
   selectTickets.style.display = "none";
   calendar.style.display = "block";
-  buttonNext.style.display = "block"; // show the next button
+  buttonNext.style.display = "block";
   buttonPrev.style.display = "none";
   buttonOptions.style.display = "none";
   dateSelection.style.display = "none";
   spacerDate.style.display = "none";
 });
 
-// Retrieve the string value from local storage
 let str = localStorage.getItem("name");
 console.log(str);
-// Update the text content of the element with ID "exp-name"
 document.getElementById("exp-name").textContent = str;
 document.getElementById("exp-name2").textContent = str;
 
@@ -80,14 +67,14 @@ var incrementMinus;
 var buttonPlus = $(".hack17-counter-button.hack17-up");
 var buttonMinus = $(".hack17-counter-button.hack17-down");
 
-var incrementPlus = buttonPlus.click(function () {
+incrementPlus = buttonPlus.click(function () {
   var $n = $(this)
     .parent(".hack17-counter-row")
     .find(".hack17-counter-input.w-input");
   $n.val(Number($n.val()) + 1);
 });
 
-var incrementMinus = buttonMinus.click(function () {
+incrementMinus = buttonMinus.click(function () {
   var $n = $(this)
     .parent(".hack17-counter-row")
     .find(".hack17-counter-input.w-input");
@@ -108,11 +95,12 @@ $(function () {
   $("#YOUTH").css("display", "none");
   $("#CHILD").css("display", "none");
   $("#INFANT").css("display", "none");
+
   const new_data = JSON.parse(localStorage.getItem("data"));
   let ageBand = [];
-
-  //getting max-min from bookingquestion call
   const travellers = JSON.parse(localStorage.getItem("booking_questions"));
+
+  console.log("Booking Questions:", travellers); // Debugging
 
   $("#max-min-travellers").text(
     `A minimum of ${travellers.bookingRequirements.minTravelersPerBooking} travellers and a maximum of ${travellers.bookingRequirements.maxTravelersPerBooking} travellers are allowed per booking.`
@@ -125,6 +113,7 @@ $(function () {
       if (description === null) {
         description = ""; // handle null descriptions
       }
+      console.log("Age Band:", band.ageBand); // Debugging
       switch (band.ageBand) {
         case "CHILD":
           document.getElementById("child_age").innerHTML += description;
@@ -139,7 +128,6 @@ $(function () {
           document.getElementById("senior_age").innerHTML += description;
           break;
         case "INFANT":
-          // Handle null description for infants specially if needed
           document.getElementById("infant_age").innerHTML += description;
           break;
         // Add cases for other age bands if necessary
@@ -151,6 +139,7 @@ $(function () {
     var ageBands = travellers.pricingInfo.ageBands;
     ageBands.forEach(function (band) {
       var ageRange = "(ages " + band.startAge + " - " + band.endAge + ")";
+      console.log("Age Band:", band.ageBand); // Debugging
       switch (band.ageBand) {
         case "CHILD":
           document.getElementById("child_age").innerHTML += ageRange;
@@ -172,7 +161,6 @@ $(function () {
     });
   }
 
-  // Call the function to update the page
   const offerSubType = localStorage.getItem("offerSubType");
   const offerType = localStorage.getItem("offerType");
   if (offerSubType === "Travel - Direct Contact") {
@@ -193,7 +181,11 @@ $(function () {
         .ageBand
     );
   }
+
+  console.log("Age Bands to Display:", ageBand); // Debugging
+
   $.each(ageBand, function (index, value) {
+    console.log("Displaying Age Band:", value); // Debugging
     $("#" + value).css("display", "flex");
     $("#" + value).css("opacity", "1");
   });
