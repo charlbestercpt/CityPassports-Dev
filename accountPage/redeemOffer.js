@@ -21,9 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json().then((data) => {
               console.log(data);
               // If the HTTP status code is 200, show "verified"
-              document.getElementById("verified").style.display = "flex";
-              document.getElementById("formBlock").style.display = "none";
-              document.getElementById("address").style.display = "none";
+              // document.getElementById("verified").style.display = "flex";
+              // document.getElementById("formBlock").style.display = "none";
+              // document.getElementById("address").style.display = "none";
 
               // document.getElementById("formSpacer").style.display = "none";
               // document.getElementById("formHeading").style.display = "none";

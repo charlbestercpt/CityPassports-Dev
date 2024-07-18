@@ -1,5 +1,3 @@
-var offerType = offertype;
-
 if (offerType === "[Travel] Wholesale - Viator") {
   var script = document.createElement("script");
   script.src =
@@ -78,9 +76,8 @@ if (offerType === "[Travel] Wholesale - Viator") {
   document.head.appendChild(script);
 } else if (offerType === "[F&B] Direct - Prepaid Voucher") {
   var script = document.createElement("script");
-  script.src =
-    //"http://127.0.0.1:5501/offersPage-fbDirectVoucher.js"
-    "https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-fbDirectUrl.js";
+  script.src = "http://127.0.0.1:5501/offersPage-fbDirectVoucher.js";
+  //"https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-fbDirectVoucher.js";
   script.onload = function () {
     console.log("[F&B] Direct - Prepaid Voucher script loaded successfully.");
   };
@@ -90,9 +87,8 @@ if (offerType === "[Travel] Wholesale - Viator") {
   document.body.appendChild(script);
 } else if (offerType === "[F&B] Direct - Referral URL") {
   var script = document.createElement("script");
-  script.src =
-    //"http://127.0.0.1:5501/offersPage-fbDirectVoucher.js"
-    "https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-fbDirectUrl.js";
+  script.src = "http://127.0.0.1:5501/offersPage-fbDirectUrl.js";
+  //"https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-fbDirectUrl.js";
   script.onload = function () {
     console.log("[F&B] Direct - Referral URL script loaded successfully.");
   };

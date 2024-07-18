@@ -1,0 +1,222 @@
+    // Function to open the modal and populate it with booking data
+    async function openModal(booking) {
+      try {
+        const { data, error } = await _supabase
+          .from("Bookings")
+          .select("*")
+          .eq("booking_number", booking.booking_number);
+
+        if (error) {
+          throw error;
+        }
+
+        if (data && data.length > 0) {
+          const bookingInfo = data[0];
+          console.log("bookingInfo", bookingInfo);
+          console.log("Associated supplier:", bookingInfo.associated_supplier);
+
+          if (bookingInfo.is_redeemed) {
+            document.getElementById("modal-voucher").style.display = "flex";
+            document.getElementById("offer-redeemed").style.display = "flex";
+            document.getElementById("step1").style.display = "flex";
+            document.getElementById("button-offer-redeem").style.display =
+              "none";
+            document.getElementById("modal-success").style.display = "none";
+            document.getElementById("modal-back").style.display = "none";
+
+            document.getElementById(
+              "offer-name"
+            ).textContent = `${bookingInfo.experience_name}`;
+            document.getElementById(
+              "offer-name2"
+            ).textContent = `${bookingInfo.experience_name}`;
+            document.getElementById(
+              "offer-booking-number"
+            ).textContent = `Booking Number: ${bookingInfo.booking_number}`;
+
+            let dateText = "N/A";
+            if (bookingInfo.activity_start_date) {
+              dateText = new Date(
+                bookingInfo.activity_start_date
+              ).toLocaleDateString();
+            } else if (bookingInfo.redemption_end_date) {
+              dateText = new Date(
+                bookingInfo.redemption_end_date
+              ).toLocaleDateString();
+            }
+            document.getElementById(
+              "offer-date"
+            ).textContent = `Date: ${dateText}`;
+
+            function getCurrencySymbol(currencyCode) {
+              const currencySymbols = {
+                USD: "$",
+                EUR: "€",
+                GBP: "£",
+                JPY: "¥",
+                AUD: "A$",
+                CAD: "C$",
+                ZAR: "R",
+              };
+              return currencySymbols[currencyCode] || currencyCode;
+            }
+
+            const currencySymbol = getCurrencySymbol(bookingInfo.currency);
+            const formattedAmount =
+              bookingInfo.order_total != null
+                ? new Intl.NumberFormat(undefined, {
+                    style: "currency",
+                    currency: bookingInfo.currency,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(bookingInfo.order_total)
+                : "N/A";
+
+            document.getElementById(
+              "offer-amount"
+            ).textContent = `Amount Paid: ${formattedAmount}`;
+
+            return;
+          } else {
+            console.log("booking not redeemed");
+            document.getElementById("offer-redeemed").style.display = "none";
+          }
+
+          document.getElementById(
+            "offer-name"
+          ).textContent = `${bookingInfo.experience_name}`;
+          document.getElementById(
+            "offer-name2"
+          ).textContent = `${bookingInfo.experience_name}`;
+          document.getElementById(
+            "offer-booking-number"
+          ).textContent = `Booking Number: ${bookingInfo.booking_number}`;
+
+          let dateText = "N/A";
+          if (bookingInfo.activity_start_date) {
+            dateText = new Date(
+              bookingInfo.activity_start_date
+            ).toLocaleDateString();
+          } else if (bookingInfo.redemption_end_date) {
+            dateText = new Date(
+              bookingInfo.redemption_end_date
+            ).toLocaleDateString();
+          }
+          document.getElementById(
+            "offer-date"
+          ).textContent = `Date: ${dateText}`;
+
+          function getCurrencySymbol(currencyCode) {
+            const currencySymbols = {
+              USD: "$",
+              EUR: "€",
+              GBP: "£",
+              JPY: "¥",
+              AUD: "A$",
+              CAD: "C$",
+              ZAR: "R",
+            };
+            return currencySymbols[currencyCode] || currencyCode;
+          }
+
+          const currencySymbol = getCurrencySymbol(bookingInfo.currency);
+          const formattedAmount =
+            bookingInfo.order_total != null
+              ? new Intl.NumberFormat(undefined, {
+                  style: "currency",
+                  currency: bookingInfo.currency,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(bookingInfo.order_total)
+              : "N/A";
+
+          document.getElementById(
+            "offer-amount"
+          ).textContent = `Amount Paid: ${formattedAmount}`;
+
+          document.getElementById("modal-voucher").style.display = "flex";
+          document.getElementById("step2").style.display = "none";
+          document.getElementById("modal-success").style.display = "none";
+          document.getElementById("modal-error").style.display = "none";
+          document.getElementById("modal-back").style.display = "none";
+          document.getElementById("button-offer-redeem").style.display = "flex";
+          document
+            .getElementById("button-offer-redeem")
+            .addEventListener("click", () => {
+              document.getElementById("step1").style.display = "none";
+              document.getElementById("step2").style.display = "flex";
+              document.getElementById("modal-back").style.display = "flex";
+            });
+          const supplierID = bookingInfo.associated_supplier;
+          console.log("Supplier ID:", supplierID);
+          const { data: supplierData, error: supplierError } = await _supabase
+            .from("Suppliers")
+            .select("*")
+            .eq("airtable_id", supplierID)
+            .single();
+
+          if (supplierError) {
+            throw supplierError;
+          }
+          console.log(supplierData);
+          const supplierRedemptionCode = supplierData.supplier_redemption_code;
+          console.log("Supplier Redemption Code:", supplierRedemptionCode);
+
+          document
+            .getElementById("modal-close")
+            .addEventListener("click", () => {
+              document.getElementById("modal-voucher").style.display = "none";
+              document.getElementById("offer-redeemed").style.display = "none";
+              document.getElementById("step1").style.display = "flex";
+              document.getElementById("step2").style.display = "none";
+            });
+
+          document
+            .getElementById("verificationForm")
+            .addEventListener("submit", async function (event) {
+              event.preventDefault();
+              const inputValue = document.getElementById("codeInput").value;
+              const booking_number = bookingInfo.booking_number;
+              console.log("Input value:", inputValue);
+              const inputValueAsNumber = parseInt(inputValue);
+
+              if (inputValueAsNumber === supplierRedemptionCode) {
+                console.log("Booking number:", booking_number);
+
+                const { data, error } = await _supabase
+                  .from("Bookings")
+                  .update({
+                    is_redeemed: true,
+                    redemption_timestamp: new Date().toISOString(),
+                  })
+                  .eq("booking_number", booking_number);
+
+                if (error) {
+                  console.error(
+                    "Error updating booking status:",
+                    error.message
+                  );
+                  console.log("Response data:", data);
+                  document.getElementById("modal-error").style.display = "flex";
+                } else {
+                  console.log("Booking status updated successfully");
+                  console.log("Response data:", data);
+                  document.getElementById("modal-success").style.display =
+                    "flex";
+                  document.getElementById("step2").style.display = "none";
+
+                  // Re-fetch and re-render the table after a successful update
+                  await fetchAndRenderBookings();
+                }
+              } else {
+                console.log("Redemption code does not match");
+                document.getElementById("modal-error").style.display = "flex";
+              }
+            });
+        } else {
+          console.log("No booking data found");
+        }
+      } catch (error) {
+        console.error("Error opening modal:", error);
+      }
+    }
