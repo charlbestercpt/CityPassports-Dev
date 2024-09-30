@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
+  document.getElementById("modal-voucher").style.display = "none";
   async function signInAndPrintBookingNumber() {
     // Function to fetch and render bookings
     async function fetchAndRenderBookings() {
@@ -104,6 +105,8 @@ document.addEventListener("DOMContentLoaded", async function () {
               document.getElementById("modal-voucher").style.display = "flex";
               document.getElementById("offer-redeemed").style.display = "flex";
               document.getElementById("step1").style.display = "flex";
+              document.getElementById("step2").style.display = "none";
+              document.getElementById("step2-fb-prepaid").style.display = "none";
               document.getElementById("button-offer-redeem").style.display = "none";
               document.getElementById("modal-success").style.display = "none";
               document.getElementById("modal-back").style.display = "none";
@@ -529,71 +532,71 @@ document.addEventListener("DOMContentLoaded", async function () {
   signInAndPrintBookingNumber();
 });
 
-document.getElementById("verificationForm").addEventListener("submit", async function (event) {
-  event.preventDefault();
+// document.getElementById("verificationForm").addEventListener("submit", async function (event) {
+//   event.preventDefault();
 
-  // Get values from custom inputs
-  const offerValue = document.getElementById("valueInput").value;
-  const guestValue = document.getElementById("guestInput").value;
+//   // Get values from custom inputs
+//   const offerValue = document.getElementById("valueInput").value;
+//   const guestValue = document.getElementById("guestInput").value;
 
-  // Example placeholders for the additional fields (replace with actual values)
-  const customerId = userStripeID; // Example: Replace with actual customer ID
-  const offerId = bookingData.booking_number; // Example: Replace with actual booking number
-  const programId = bookingData.associated_program; // Example: Replace with actual program ID
+//   // Example placeholders for the additional fields (replace with actual values)
+//   const customerId = userStripeID; // Example: Replace with actual customer ID
+//   const offerId = bookingData.booking_number; // Example: Replace with actual booking number
+//   const programId = bookingData.associated_program; // Example: Replace with actual program ID
 
-  // Construct the object with offer redemption fields
-  const redemptionData = {
-    customerId: customerId,
-    offerId: offerId,
-    offerValue: offerValue,
-    paxCount: guestValue,
-    programId: programId,
-  };
+//   // Construct the object with offer redemption fields
+//   const redemptionData = {
+//     customerId: customerId,
+//     offerId: offerId,
+//     offerValue: offerValue,
+//     paxCount: guestValue,
+//     programId: programId,
+//   };
 
-  // Example of sending redemptionData to a webhook
-  try {
-    const response = await fetch("https://hook.us1.make.com/9dvcpus9w65mv0m4oxhywxuwnaih6fkn", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(redemptionData),
-    });
+//   // Example of sending redemptionData to a webhook
+//   try {
+//     const response = await fetch("https://hook.us1.make.com/9dvcpus9w65mv0m4oxhywxuwnaih6fkn", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(redemptionData),
+//     });
 
-    if (!response.ok) {
-      throw new Error("Failed to send data to webhook");
-    }
+//     if (!response.ok) {
+//       throw new Error("Failed to send data to webhook");
+//     }
 
-    // Handle success scenario after sending webhook
-    console.log("Redemption data sent successfully to webhook:", redemptionData);
+//     // Handle success scenario after sending webhook
+//     console.log("Redemption data sent successfully to webhook:", redemptionData);
 
-    // Update booking status example (remove or modify based on your actual logic)
-    const booking_number = bookingData.booking_number;
-    const { data, error } = await _supabase
-      .from("Bookings")
-      .update({
-        is_redeemed: true,
-        redemption_timestamp: new Date().toISOString(),
-      })
-      .eq("booking_number", booking_number);
+//     // Update booking status example (remove or modify based on your actual logic)
+//     const booking_number = bookingData.booking_number;
+//     const { data, error } = await _supabase
+//       .from("Bookings")
+//       .update({
+//         is_redeemed: true,
+//         redemption_timestamp: new Date().toISOString(),
+//       })
+//       .eq("booking_number", booking_number);
 
-    if (error) {
-      console.error("Error updating booking status:", error.message);
-      document.getElementById("modal-error").style.display = "flex";
-    } else {
-      console.log("Booking status updated successfully");
-      console.log("Response data:", data);
-      document.getElementById("modal-success").style.display = "flex";
-      document.getElementById("step2-fb-prepaid").style.display = "none";
+//     if (error) {
+//       console.error("Error updating booking status:", error.message);
+//       document.getElementById("modal-error").style.display = "flex";
+//     } else {
+//       console.log("Booking status updated successfully");
+//       console.log("Response data:", data);
+//       document.getElementById("modal-success").style.display = "flex";
+//       document.getElementById("step2-fb-prepaid").style.display = "none";
 
-      // Re-fetch and re-render the table after a successful update
-      await fetchAndRenderBookings();
+//       // Re-fetch and re-render the table after a successful update
+//       await fetchAndRenderBookings();
 
-      // Reset the form fields after successful submission
-      document.getElementById("verificationForm").reset();
-    }
-  } catch (error) {
-    console.error("Error sending redemption data to webhook:", error);
-    document.getElementById("modal-error").style.display = "flex";
-  }
-});
+//       // Reset the form fields after successful submission
+//       document.getElementById("verificationForm").reset();
+//     }
+//   } catch (error) {
+//     console.error("Error sending redemption data to webhook:", error);
+//     document.getElementById("modal-error").style.display = "flex";
+//   }
+// });

@@ -1,8 +1,7 @@
 if (offerType === "[Travel] Wholesale - Viator") {
   var script = document.createElement("script");
-  script.src =
-    //"http://127.0.0.1:5501/offersPage-travelWholesaleViator.js"
-    "https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-travelWholesaleViator.js";
+  script.src = "http://127.0.0.1:5501/offersPage-travelWholesaleViator.js";
+  //"https://cdn.jsdelivr.net/gh/charlbestercpt/CityPassports-Dev@v1.6.2.4/offersPage-travelWholesaleViator.js";
   script.onload = function () {
     console.log("[Travel] Wholesale - Viator script loaded successfully.");
   };
